@@ -10,6 +10,7 @@
     <color name="background">#FBF8CC</color>
     <color name="background_shade">#FDE4CF</color>
     <color name="banner">#87F1AA</color>
+    <color name="banner_dark">#7ADA9A</color>
     <color name="red_post_it">#FFC1BF</color>
     <color name="red_post_it_dark">#FF8F8C</color>
     <color name="yellow_post_it">#F9E871</color>

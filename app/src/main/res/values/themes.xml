@@ -3,7 +3,7 @@
     <style name="Theme.ToDoListApplication" parent="Theme.AppCompat.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/banner</item>
-        <item name="colorPrimaryVariant">@color/banner</item>
+        <item name="colorPrimaryVariant">@color/banner_dark</item>
         <item name="colorOnPrimary">@color/banner</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>
