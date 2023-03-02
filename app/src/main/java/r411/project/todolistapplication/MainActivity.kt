@@ -13,6 +13,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         val emoji = String(Character.toChars(0x1F918))
         val simpleDateFormat = SimpleDateFormat("dd-mm-yyyy HH:mm")
-        val test1: TaskModelClass = TaskModelClass(1, "Ménage", "🧹", "Passer le balais", simpleDateFormat.format(Date()), "A faire")
+        val test1: TaskModelClass = TaskModelClass(1, "Ménage", "Passer le balais", simpleDateFormat.format(Date()), "A faire")
     }
 }
