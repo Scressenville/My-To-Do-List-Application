@@ -8,6 +8,7 @@
     tools:context=".MainActivity" >
 
     <LinearLayout
+        android:id="@+id/banner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/banner"
@@ -20,15 +21,31 @@
         app:layout_constraintVertical_bias="0.0">
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/banner_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="10sp"
             android:layout_weight="1"
             android:fontFamily="@font/the_delicate"
             android:gravity="center"
             android:text="@string/app_name"
             android:textColor="@color/font_color"
-            android:textSize="20sp"
-            android:layout_margin="10sp"/>
+            android:textSize="20sp" />
     </LinearLayout>
+
+    <GridView
+        android:id="@+id/content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:numColumns="2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/banner"
+        android:gravity="center" >
+
+    </GridView>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
