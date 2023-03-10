@@ -1,29 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    tools:context=".MainActivity" >
+    tools:context=".MainActivity"
+    android:orientation="vertical">
 
-    <LinearLayout
-        android:id="@+id/banner"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/banner"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
+        android:layout_height="62dp"
+        android:background="@color/banner">
 
         <TextView
-            android:id="@+id/banner_text"
-            android:layout_width="wrap_content"
+            android:id="@+id/banner_text1"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_centerVertical="true"
             android:layout_margin="10sp"
             android:layout_weight="1"
             android:fontFamily="@font/the_delicate"
@@ -31,21 +26,58 @@
             android:text="@string/app_name"
             android:textColor="@color/font_color"
             android:textSize="20sp" />
-    </LinearLayout>
 
-    <GridView
-        android:id="@+id/content"
-        android:layout_width="wrap_content"
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/floatingActionButton1"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerInParent="true"
+            android:layout_marginEnd="34dp"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:fadingEdge="none"
+            android:src="@drawable/add_icon"
+            app:backgroundTint="@color/banner_dark"
+            app:fabCustomSize="45dp" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/banner"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:numColumns="2"
+        android:background="@color/background_shade"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/banner"
-        android:gravity="center" >
+        app:layout_constraintTop_toBottomOf="@+id/banner">
 
-    </GridView>
+        <GridView
+            android:id="@+id/content"
+            android:layout_width="wrap_content"
+            android:layout_height="672dp"
+            android:gravity="center"
+            android:numColumns="2"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/banner"
+            android:verticalSpacing="20dp"/>
+
+    </LinearLayout>
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

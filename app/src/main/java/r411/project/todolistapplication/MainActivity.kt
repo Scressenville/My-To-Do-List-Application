@@ -13,12 +13,15 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val emoji = String(Character.toChars(0x1F918))
-        val simpleDateFormat = SimpleDateFormat("dd-mm-yyyy HH:mm")
-        val test1: TaskModelClass = TaskModelClass(1, "Ménage", "Passer le balais", simpleDateFormat.format(Date()), "A faire")
+        val dateFormat = SimpleDateFormat("dd-mm-yyyy HH:mm")
+        val test1: TaskModelClass = TaskModelClass(1, "Ménage", "Passer le balais", dateFormat.format(Date()), "A faire")
 
         val taskList = ArrayList<TaskModelClass>()
-        taskList.add(TaskModelClass(1, "Ménage", "Passer l'aspirateur", null, "A faire"))
-        taskList.add(TaskModelClass(2, "Courses", "Acheter du pain", null, "A faire"))
+        taskList.add(TaskModelClass(1, "Ménage", "Passer l'aspirateur", "11-03-2023 10:00", "A faire"))
+        taskList.add(TaskModelClass(2, "Courses", "Acheter du pain", "14-03-2023 10:00", "A faire"))
+        taskList.add(TaskModelClass(3, "Courses", "Acheter du pain", "14-03-2023 10:00", "Terminee"))
+        taskList.add(TaskModelClass(3, "Courses", "Acheter du pain", null, "A faire"))
+
         val adapter = MyGridAdapter(this, taskList)
         findViewById<GridView>(R.id.content).adapter = adapter
     }
