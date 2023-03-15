@@ -27,7 +27,7 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
         val CREATE_CATEGORY_TABLE = (
             "CREATE TABLE $TABLE_CATEGORIES (" +
                 "$CATEGORY_NAME TEXT PRIMARY KEY," +
-                "$CATEGORY_ICON_UNICODE TEXT NOT NULL);"
+                "$CATEGORY_ICON_UNICODE INTEGER NOT NULL);"
         )
 
         val INSERT_CATEGORIES = (
@@ -57,8 +57,8 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
             "INSERT INTO $TABLE_TASKS ($TASK_CATEGORY, $TASK_DESCRIPTION, $TASK_DEADLINE, $TASK_STATUS) VALUES " +
                 "('Menage', 'Passer le balais', '11-03-2023 10:00', 'En retard')," +
                 "('Courses', 'Acheter du pain', '11-05-2023 10:00', 'A faire')," +
-                "('Courses', 'Acheter du pain', '11-02-2023 10:00', 'Terminee'),"+
-                "('Courses', 'Acheter du pain', null, 'A faire');")
+                "('Animaux', 'Prendre RDV Chez le vétérinaire', '11-02-2023 10:00', 'Terminee'),"+
+                "('Medical', 'Rappel Vaccin', null, 'A faire');")
 
         db?.execSQL(CREATE_CATEGORY_TABLE)
         db?.execSQL(INSERT_CATEGORIES)
@@ -89,7 +89,8 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
 
     fun selectAllTasks():ArrayList<TaskModelClass>{
         val taskList:ArrayList<TaskModelClass> = ArrayList<TaskModelClass>()
-        val selectQuery = "SELECT * FROM $TABLE_TASKS"
+        val selectQuery = "SELECT $TASK_ID, $CATEGORY_ICON_UNICODE, $TASK_DESCRIPTION, $TASK_DEADLINE, $TASK_STATUS " +
+                            "FROM $TABLE_TASKS T INNER JOIN $TABLE_CATEGORIES C ON T.$TASK_CATEGORY = C.$CATEGORY_NAME"
         val db = this.readableDatabase
         var cursor: Cursor? = null
         try {
@@ -100,14 +101,14 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
             return ArrayList()
         }
         var taskId: Int
-        var taskCategory: String
+        var taskCategory: Int
         var taskDescription: String
         var taskDeadline: String?
         var taskStatus: String
         if (cursor.moveToFirst()) {
             do {
                 taskId = cursor.getInt(cursor.getColumnIndex(TASK_ID))
-                taskCategory = cursor.getString(cursor.getColumnIndex(TASK_CATEGORY))
+                taskCategory = cursor.getInt(cursor.getColumnIndex(CATEGORY_ICON_UNICODE))
                 taskDescription = cursor.getString(cursor.getColumnIndex(TASK_DESCRIPTION))
                 taskDeadline = cursor.getString(cursor.getColumnIndex(TASK_DEADLINE))
                 taskStatus = cursor.getString(cursor.getColumnIndex(TASK_STATUS))

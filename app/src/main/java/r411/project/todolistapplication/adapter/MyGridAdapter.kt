@@ -54,10 +54,9 @@ class MyGridAdapter(context: Context, taskArrayList: ArrayList<TaskModelClass>) 
             post_it_content.setBackgroundResource(R.color.blue_post_it)
         }
 
-        post_it_banner.setText(String(Character.toChars(0x1f6d2)))
-        val dateFormat = SimpleDateFormat("dd-MM-yyyy HH:mm")
+        post_it_banner.setText(String(Character.toChars(task.taskCategory)))
         listitemView.id = task.taskId
-        post_it_content.setText(task.taskDescription + " " + listitemView.id)
+        post_it_content.setText(task.taskDescription)
         return listitemView
     }
 }
