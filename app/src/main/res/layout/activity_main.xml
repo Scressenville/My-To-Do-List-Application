@@ -39,7 +39,8 @@
             android:fadingEdge="none"
             android:src="@drawable/add_icon"
             app:backgroundTint="@color/banner_dark"
-            app:fabCustomSize="45dp" />
+            app:fabCustomSize="45dp"
+            android:onClick="addTask"/>
     </RelativeLayout>
 
     <LinearLayout

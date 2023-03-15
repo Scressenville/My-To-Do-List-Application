@@ -31,17 +31,14 @@ class MyGridAdapter(context: Context, taskArrayList: ArrayList<TaskModelClass>) 
 
         if (task!!.taskDeadLine != null) {
             val dateFormat = SimpleDateFormat("dd-MM-yyyy HH:mm")
-            val date1 = dateFormat.parse(task.taskDeadLine)
-            val date2 = Date()
-            val diff = date1.time - date2.time
-            val diff2 = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS)
+            val minutesDifference = TimeUnit.MINUTES.convert((dateFormat.parse(task.taskDeadLine).time - Date().time), TimeUnit.MILLISECONDS)
 
-            if (diff2 <= 1 && diff2 >= 0) {
+            if (minutesDifference < 0) {
                 post_it_banner.setBackgroundResource(R.color.red_post_it_dark)
                 post_it_content.setBackgroundResource(R.color.red_post_it)
             }
 
-            if (diff2>1) {
+            if (minutesDifference >= 0) {
                 post_it_banner.setBackgroundResource(R.color.green_post_it_dark)
                 post_it_content.setBackgroundResource(R.color.green_post_it)
             }
@@ -58,7 +55,9 @@ class MyGridAdapter(context: Context, taskArrayList: ArrayList<TaskModelClass>) 
         }
 
         post_it_banner.setText(String(Character.toChars(0x1f6d2)))
-        post_it_content.setText(task.taskDescription)
+        val dateFormat = SimpleDateFormat("dd-MM-yyyy HH:mm")
+        listitemView.id = task.taskId
+        post_it_content.setText(task.taskDescription + " " + listitemView.id)
         return listitemView
     }
 }
