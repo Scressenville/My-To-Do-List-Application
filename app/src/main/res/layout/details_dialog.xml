@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="350dp"
+        android:layout_height="350dp"
+        android:background="@color/green_post_it"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.491"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.498">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/modify_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/detail_post_it_shade"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginEnd="284dp"
+            android:layout_marginBottom="7dp"
+            android:clickable="true"
+            app:backgroundTint="@color/green_post_it"
+            app:srcCompat="@drawable/crayon" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/detail_close_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/detail_post_it_shade"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="286dp"
+            android:layout_marginTop="7dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="6dp"
+            android:clickable="true"
+            app:backgroundTint="@color/green_post_it"
+            app:srcCompat="@drawable/close_button" />
+
+        <TextView
+            android:id="@+id/detail_post_it_shade"
+            android:layout_width="match_parent"
+            android:layout_height="69dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="0dp"
+            android:layout_marginBottom="281dp"
+            android:background="@color/green_post_it_dark"
+            android:gravity="center"
+            android:text="Emoji"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="287dp"
+            android:layout_height="138dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="80dp"
+            android:layout_marginEnd="31dp"
+            android:layout_marginBottom="132dp"
+            android:gravity="center"
+            android:text="Contenu tâche"
+            android:textColor="@color/black" />
+
+        <Button
+            android:id="@+id/task_complete"
+            android:layout_width="128dp"
+            android:layout_height="57dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="275dp"
+            android:layout_marginEnd="192dp"
+            android:layout_marginBottom="18dp"
+            android:background="@color/green_post_it_dark"
+            android:fontFamily="@font/the_delicate"
+            android:text="Tâche réalisée !"
+            android:textAllCaps="false"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/delete_task"
+            android:layout_width="128dp"
+            android:layout_height="57dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="192dp"
+            android:layout_marginTop="275dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginBottom="18dp"
+            android:background="@color/green_post_it_dark"
+            android:fontFamily="@font/the_delicate"
+            android:text="Supprimer la tâche"
+            android:textAllCaps="false"
+            android:textColor="@color/black" />
+    </RelativeLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

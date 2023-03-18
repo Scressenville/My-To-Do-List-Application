@@ -4,7 +4,10 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
-import android.widget.*
+import android.widget.Button
+import android.widget.GridView
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import r411.project.todolistapplication.adapter.MyGridAdapter
@@ -63,6 +66,16 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(applicationContext, "task added", Toast.LENGTH_LONG).show()
             b.dismiss()
         }*/
+        b.show()
+    }
+
+    fun viewTask(view: View){
+        val dialogBuilder = AlertDialog.Builder(this)
+        val inflater = this.layoutInflater
+        val dialogView = inflater.inflate(R.layout.details_dialog, null)
+        dialogBuilder.setView(dialogView)
+
+        val b = dialogBuilder.create()
         b.show()
     }
 
