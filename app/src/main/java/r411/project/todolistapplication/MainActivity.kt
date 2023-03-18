@@ -4,9 +4,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
-import android.widget.Button
-import android.widget.GridView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import r411.project.todolistapplication.adapter.MyGridAdapter
@@ -24,6 +22,8 @@ class MainActivity : AppCompatActivity() {
     private val updateTasks = object : Runnable {
         override fun run() {
             //Method calls and updating task status here
+            var adapter: MyGridAdapter = findViewById<GridView>(R.id.content).adapter as MyGridAdapter
+            adapter.notifyDataSetChanged()
             mainHandler.postDelayed(this, 1000)
         }
     }
@@ -33,12 +33,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val dbhandler: DatabaseHandler = DatabaseHandler(this)
-
-        /*dbhandler.addTask(TaskModelClass(1, "Ménage", "Passer l'aspirateur", "11-03-2023 10:00", "En retard"))
-        dbhandler.addTask(TaskModelClass(2, "Courses", "Acheter du pain", "15-03-2023 16:29", "A faire"))
-        dbhandler.addTask(TaskModelClass(3, "Courses", "Acheter du pain", "14-03-2023 10:00", "Terminee"))
-        dbhandler.addTask(TaskModelClass(4, "Courses", "Acheter du pain", null, "A faire"))
-*/
         val taskList: ArrayList<TaskModelClass> = dbhandler.selectAllTasks()
         val adapter = MyGridAdapter(this, taskList)
         findViewById<GridView>(R.id.content).adapter = adapter
@@ -54,12 +48,22 @@ class MainActivity : AppCompatActivity() {
 
         val b = dialogBuilder.create()
 
-        dialogView.findViewById<Button>(R.id.button2).setOnClickListener{
+        val categories = arrayOf<String>("Ménage", "Courses", "Animaux")
+        val dropdown = dialogView.findViewById<Spinner>(R.id.dropdown)
+
+        val ad = ArrayAdapter<Any?>(
+            this, android.R.layout.simple_spinner_item, categories
+        )
+
+        ad.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+        dropdown.adapter = ad
+
+        /*dialogView.findViewById<Button>(R.id.add_task_btn).setOnClickListener{
             Toast.makeText(applicationContext, "task added", Toast.LENGTH_LONG).show()
             b.dismiss()
-        }
+        }*/
         b.show()
-
     }
 
     override fun onPause() {
@@ -70,5 +74,9 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         mainHandler.post(updateTasks)
+    }
+
+    fun openDatePicker(view: View) {
+        println("coucou")
     }
 }
