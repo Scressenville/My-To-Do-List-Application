@@ -10,8 +10,6 @@ import androidx.appcompat.app.AppCompatActivity
 import r411.project.todolistapplication.adapter.MyGridAdapter
 import r411.project.todolistapplication.classes.TaskModelClass
 import r411.project.todolistapplication.handler.DatabaseHandler
-import java.text.SimpleDateFormat
-import java.util.*
 import kotlin.collections.ArrayList
 
 
@@ -24,7 +22,7 @@ class MainActivity : AppCompatActivity() {
             //Method calls and updating task status here
             var adapter: MyGridAdapter = findViewById<GridView>(R.id.content).adapter as MyGridAdapter
             adapter.notifyDataSetChanged()
-            mainHandler.postDelayed(this, 1000)
+            mainHandler.postDelayed(this, 20000)
         }
     }
 

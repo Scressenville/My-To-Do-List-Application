@@ -11,7 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:onClick="viewTask">
+        android:onClick="viewTask"
+        android:tag="postItLayout">
 
         <TextView
             android:id="@+id/post_it_shade"

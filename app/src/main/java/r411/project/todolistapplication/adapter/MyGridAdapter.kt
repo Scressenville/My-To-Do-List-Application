@@ -1,11 +1,11 @@
 package r411.project.todolistapplication.adapter
 
 import android.content.Context
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.LinearLayout
 import android.widget.TextView
 import r411.project.todolistapplication.R
 import r411.project.todolistapplication.classes.TaskModelClass
@@ -26,37 +26,40 @@ class MyGridAdapter(context: Context, taskArrayList: ArrayList<TaskModelClass>) 
         }
 
         val task: TaskModelClass? = getItem(position)
-        val post_it_banner = listitemView!!.findViewById<TextView>(R.id.post_it_shade)
-        val post_it_content = listitemView!!.findViewById<TextView>(R.id.post_it_content)
+        val postItBanner = listitemView!!.findViewById<TextView>(R.id.post_it_shade)
+        val postItContent = listitemView.findViewById<TextView>(R.id.post_it_content)
 
         if (task!!.taskDeadLine != null) {
             val dateFormat = SimpleDateFormat("dd-MM-yyyy HH:mm")
             val minutesDifference = TimeUnit.MINUTES.convert((dateFormat.parse(task.taskDeadLine).time - Date().time), TimeUnit.MILLISECONDS)
 
             if (minutesDifference < 0) {
-                post_it_banner.setBackgroundResource(R.color.red_post_it_dark)
-                post_it_content.setBackgroundResource(R.color.red_post_it)
+                postItBanner.setBackgroundResource(R.color.red_post_it_dark)
+                postItContent.setBackgroundResource(R.color.red_post_it)
             }
 
             if (minutesDifference >= 0) {
-                post_it_banner.setBackgroundResource(R.color.green_post_it_dark)
-                post_it_content.setBackgroundResource(R.color.green_post_it)
+                postItBanner.setBackgroundResource(R.color.green_post_it_dark)
+                postItContent.setBackgroundResource(R.color.green_post_it)
             }
         }
 
         if (task.taskDeadLine == null) {
-            post_it_banner.setBackgroundResource(R.color.yellow_post_it_dark)
-            post_it_content.setBackgroundResource(R.color.yellow_post_it)
+            postItBanner.setBackgroundResource(R.color.yellow_post_it_dark)
+            postItContent.setBackgroundResource(R.color.yellow_post_it)
         }
 
         if (task.taskStatus == "Terminee") {
-            post_it_banner.setBackgroundResource(R.color.blue_post_it_dark)
-            post_it_content.setBackgroundResource(R.color.blue_post_it)
+            postItBanner.setBackgroundResource(R.color.blue_post_it_dark)
+            postItContent.setBackgroundResource(R.color.blue_post_it)
         }
 
-        post_it_banner.setText(String(Character.toChars(task.taskCategory)))
-        listitemView.id = task.taskId
-        post_it_content.setText(task.taskDescription)
+        postItBanner.text = String(Character.toChars(task.taskCategory))
+        postItContent.text = task.taskDescription
+
+        val postItLayout = listitemView.findViewWithTag<LinearLayout>("postItLayout")
+        postItLayout.id = task.taskId
+
         return listitemView
     }
 }
