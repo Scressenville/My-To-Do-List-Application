@@ -6,6 +6,7 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
+import android.security.identity.AccessControlProfileId
 import r411.project.todolistapplication.classes.TaskModelClass
 
 class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
@@ -117,5 +118,36 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
             } while (cursor.moveToNext())
         }
         return taskList
+    }
+
+    fun selectTaskFromId(id: Int): TaskModelClass?{
+        val selectQuery = "SELECT $TASK_ID, $CATEGORY_ICON_UNICODE, $TASK_DESCRIPTION, $TASK_DEADLINE, $TASK_STATUS " +
+                "FROM $TABLE_TASKS T INNER JOIN $TABLE_CATEGORIES C ON T.$TASK_CATEGORY = C.$CATEGORY_NAME " +
+                "WHERE $TASK_ID=$id"
+        val db = this.readableDatabase
+        var cursor: Cursor? = null
+        try {
+            cursor = db.rawQuery(selectQuery, null)
+        }
+        catch (e: SQLiteException) {
+            db.execSQL(selectQuery)
+            return null
+        }
+        val taskId: Int
+        val taskCategory: Int
+        val taskDescription: String
+        val taskDeadline: String?
+        val taskStatus: String
+
+        cursor.moveToFirst()
+        taskId = cursor.getInt(cursor.getColumnIndex(TASK_ID))
+        taskCategory = cursor.getInt(cursor.getColumnIndex(CATEGORY_ICON_UNICODE))
+        taskDescription = cursor.getString(cursor.getColumnIndex(TASK_DESCRIPTION))
+        taskDeadline = cursor.getString(cursor.getColumnIndex(TASK_DEADLINE))
+        taskStatus = cursor.getString(cursor.getColumnIndex(TASK_STATUS))
+        val task = TaskModelClass(taskId, taskCategory, taskDescription, taskDeadline, taskStatus)
+
+        return task
+
     }
 }
