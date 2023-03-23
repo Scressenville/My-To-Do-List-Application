@@ -3,10 +3,12 @@ package r411.project.todolistapplication
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.text.method.ScrollingMovementMethod
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import r411.project.todolistapplication.adapter.MyGridAdapter
 import r411.project.todolistapplication.classes.TaskModelClass
 import r411.project.todolistapplication.handler.DatabaseHandler
@@ -80,12 +82,17 @@ class MainActivity : AppCompatActivity() {
         val b = dialogBuilder.create()
 
         val dbhandler: DatabaseHandler = DatabaseHandler(this)
-        println("Id de la tache : " + view.id)
         val task = dbhandler.selectTaskFromId(view.id)
 
-        dialogView.findViewById<TextView>(R.id.detail_post_it_shade).text = String(Character.toChars(task!!.taskCategory))
-        dialogView.findViewById<TextView>(R.id.detail_content).text= task.taskDescription
-        dialogView.findViewById<TextView>(R.id.detail_time_date).text = task.taskDeadLine
+        dialogView.findViewById<TextView>(R.id.task_category).text = String(Character.toChars(task!!.taskCategory))
+        dialogView.findViewById<TextView>(R.id.details_description).setMovementMethod(ScrollingMovementMethod.getInstance());
+        dialogView.findViewById<TextView>(R.id.details_description).text= task.taskDescription
+        val taskDeadline = dialogView.findViewById<TextView>(R.id.details_deadline)
+        if (task.taskDeadLine != null) taskDeadline.text=task.taskDeadLine
+
+        dialogView.findViewById<FloatingActionButton>(R.id.detail_close_button).setOnClickListener{
+            b.dismiss()
+        }
 
         b.show()
     }
@@ -111,7 +118,11 @@ class MainActivity : AppCompatActivity() {
 
         val databaseHandler = DatabaseHandler(this)
 
-        if(description.trim()!=""){
+        if (description.length > 90){
+            Toast.makeText(applicationContext, "La description de la tâche doit faire 90 caractères au plus !", Toast.LENGTH_SHORT).show()
+        }
+
+        if(description.trim()!="" && description.length <= 90){
             val status = databaseHandler.addTask(category, description, deadline)
             if(status > -1){
                 Toast.makeText(applicationContext,"Tâche ajoutée !",Toast.LENGTH_LONG).show()

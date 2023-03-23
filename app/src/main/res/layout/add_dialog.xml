@@ -67,7 +67,8 @@
                 android:layout_width="300dp"
                 android:layout_height="100dp"
                 android:background="@color/green_post_it_dark"
-                android:textColor="@color/black" />
+                android:textColor="@color/black"
+                android:singleLine="true" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -105,7 +106,7 @@
                     android:layout_marginEnd="5dp"
                     android:fontFamily="@font/the_delicate"
                     android:gravity="center"
-                    android:text="à :"
+                    android:text="@string/task_deadline_time_picker"
                     android:textColor="@color/black" />
 
                 <TextView
