@@ -5,5 +5,5 @@ class TaskModelClass(
     val taskCategory: Int,
     val taskDescription: String,
     val taskDeadLine: String?,
-    val taskStatus: String
+    val taskStatus: Int
 )

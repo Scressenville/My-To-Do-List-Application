@@ -22,7 +22,8 @@ class MainActivity : AppCompatActivity() {
             //Method calls and updating task status here
             var adapter: MyGridAdapter = findViewById<GridView>(R.id.content).adapter as MyGridAdapter
             adapter.notifyDataSetChanged()
-            mainHandler.postDelayed(this, 20000)
+
+            mainHandler.postDelayed(this, 5000)
         }
     }
 
@@ -38,7 +39,7 @@ class MainActivity : AppCompatActivity() {
         mainHandler = Handler(Looper.getMainLooper())
     }
 
-    fun addTask(view: View){
+    fun showAddTaskDialog(view: View){
         val dialogBuilder = AlertDialog.Builder(this)
         val inflater = this.layoutInflater
         val dialogView = inflater.inflate(R.layout.add_dialog, null)
@@ -46,7 +47,8 @@ class MainActivity : AppCompatActivity() {
 
         val b = dialogBuilder.create()
 
-        val categories = arrayOf<String>("Ménage", "Courses", "Animaux")
+        val dbhandler: DatabaseHandler = DatabaseHandler(this)
+        val categories = dbhandler.selectAllCategories()
         val dropdown = dialogView.findViewById<Spinner>(R.id.dropdown)
 
         val ad = ArrayAdapter<Any?>(
@@ -56,6 +58,11 @@ class MainActivity : AppCompatActivity() {
         ad.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
         dropdown.adapter = ad
+
+        val btn = dialogView.findViewById<Button>(R.id.create_task_btn)
+        btn.setOnClickListener{
+            insertTask(dialogView, b)
+        }
 
         /*dialogView.findViewById<Button>(R.id.add_task_btn).setOnClickListener{
             Toast.makeText(applicationContext, "task added", Toast.LENGTH_LONG).show()
@@ -86,5 +93,26 @@ class MainActivity : AppCompatActivity() {
 
     fun openDatePicker(view: View) {
         println("coucou")
+    }
+
+    fun insertTask(view: View, dialog: AlertDialog){
+        val category = view.findViewById<Spinner>(R.id.dropdown).selectedItemPosition + 1
+        val description = view.findViewById<EditText>(R.id.task_description_input).text.toString()
+        val deadline = null
+
+        val databaseHandler = DatabaseHandler(this)
+
+        if(description.trim()!=""){
+            val status = databaseHandler.addTask(category, description, deadline)
+            if(status > -1){
+                Toast.makeText(applicationContext,"Tâche ajoutée !",Toast.LENGTH_LONG).show()
+                val taskList: ArrayList<TaskModelClass> = databaseHandler.selectAllTasks()
+                val adapter = MyGridAdapter(this, taskList)
+                findViewById<GridView>(R.id.content).adapter = adapter
+                dialog.dismiss()
+            }
+        }else{
+            Toast.makeText(applicationContext,"La description de la tâche ne peut pas être vide.",Toast.LENGTH_LONG).show()
+        }
     }
 }

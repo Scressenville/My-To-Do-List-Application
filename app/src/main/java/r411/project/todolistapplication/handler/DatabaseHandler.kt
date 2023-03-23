@@ -14,11 +14,12 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
         private val DATABASE_NAME = "TaskDataBase"
         private val TABLE_TASKS = "TaskTable"
         private val TABLE_CATEGORIES = "CategoryTable"
-        private val TASK_ID = "id"
+        private val TASK_ID = "task_id"
         private val TASK_CATEGORY = "category"
         private val TASK_DESCRIPTION = "description"
         private val TASK_DEADLINE = "deadline"
         private val TASK_STATUS = "status"
+        private val CATEGORY_ID = "category_id"
         private val CATEGORY_NAME = "name"
         private val CATEGORY_ICON_UNICODE = "icon"
     }
@@ -26,12 +27,13 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
     override fun onCreate(db: SQLiteDatabase?) {
         val CREATE_CATEGORY_TABLE = (
             "CREATE TABLE $TABLE_CATEGORIES (" +
-                "$CATEGORY_NAME TEXT PRIMARY KEY," +
-                "$CATEGORY_ICON_UNICODE INTEGER NOT NULL);"
+                "$CATEGORY_ID INTEGER PRIMARY KEY, " +
+                "$CATEGORY_NAME TEXT UNIQUE," +
+                "$CATEGORY_ICON_UNICODE INTEGER NOT NULL UNIQUE);"
         )
 
         val INSERT_CATEGORIES = (
-            "INSERT INTO $TABLE_CATEGORIES VALUES " +
+            "INSERT INTO $TABLE_CATEGORIES ($CATEGORY_NAME, $CATEGORY_ICON_UNICODE) VALUES " +
                 "('Courses', '0x1f6d2')," +
                 "('Menage', '0x1f9f9')," +
                 "('Travail', '0x270f')," +
@@ -46,19 +48,19 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
         val CREATE_TASK_TABLE = (
             "CREATE TABLE $TABLE_TASKS (" +
                 "$TASK_ID INTEGER PRIMARY KEY, " +
-                "$TASK_CATEGORY TEXT NOT NULL, " +
-                "$TASK_DESCRIPTION TEXT, " +
+                "$TASK_CATEGORY INTEGER NOT NULL, " +
+                "$TASK_DESCRIPTION TEXT NOT NULL, " +
                 "$TASK_DEADLINE TEXT, " +
-                "$TASK_STATUS TEXT NOT NULL, " +
-                "FOREIGN KEY ($TASK_CATEGORY) REFERENCES $TABLE_CATEGORIES ($CATEGORY_NAME));"
+                "$TASK_STATUS INTEGER NOT NULL, " +
+                "FOREIGN KEY ($TASK_CATEGORY) REFERENCES $TABLE_CATEGORIES ($CATEGORY_ID));"
             )
 
         val INSERT_TASKS = (
             "INSERT INTO $TABLE_TASKS ($TASK_CATEGORY, $TASK_DESCRIPTION, $TASK_DEADLINE, $TASK_STATUS) VALUES " +
-                "('Menage', 'Passer le balais', '11-03-2023 10:00', 'En retard')," +
-                "('Courses', 'Acheter du pain', '11-05-2023 10:00', 'A faire')," +
-                "('Animaux', 'Prendre RDV Chez le vétérinaire', '11-02-2023 10:00', 'Terminee'),"+
-                "('Medical', 'Rappel Vaccin', null, 'A faire');")
+                "(2, 'Passer le balais', '11-03-2023 10:00', -1)," +
+                "(1, 'Acheter du pain', '11-05-2023 10:00', 0)," +
+                "(8, 'Prendre RDV Chez le vétérinaire', '11-02-2023 10:00', 1)," +
+                "(6, 'Rappel Vaccin', null, 0);")
 
         db?.execSQL(CREATE_CATEGORY_TABLE)
         db?.execSQL(INSERT_CATEGORIES)
@@ -72,13 +74,13 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
         onCreate(db)
     }
 
-    fun addTask(task: TaskModelClass): Long{
+    fun addTask(taskCategory: Int, taskDescription: String, taskDeadline: String?): Long{
         val db = this.writableDatabase
         val contentValues = ContentValues()
-        contentValues.put(TASK_CATEGORY, task.taskCategory)
-        contentValues.put(TASK_DESCRIPTION, task.taskDescription)
-        contentValues.put(TASK_DEADLINE, task.taskDeadLine)
-        contentValues.put(TASK_STATUS, task.taskStatus)
+        contentValues.put(TASK_CATEGORY, taskCategory)
+        contentValues.put(TASK_DESCRIPTION, taskDescription)
+        contentValues.put(TASK_DEADLINE, taskDeadline)
+        contentValues.put(TASK_STATUS, 0)
 
         val success = db.insert(TABLE_TASKS, null, contentValues)
 
@@ -90,7 +92,7 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
     fun selectAllTasks():ArrayList<TaskModelClass>{
         val taskList:ArrayList<TaskModelClass> = ArrayList<TaskModelClass>()
         val selectQuery = "SELECT $TASK_ID, $CATEGORY_ICON_UNICODE, $TASK_DESCRIPTION, $TASK_DEADLINE, $TASK_STATUS " +
-                            "FROM $TABLE_TASKS T INNER JOIN $TABLE_CATEGORIES C ON T.$TASK_CATEGORY = C.$CATEGORY_NAME"
+                            "FROM $TABLE_TASKS T INNER JOIN $TABLE_CATEGORIES C ON T.$TASK_CATEGORY = C.$CATEGORY_ID ORDER BY $TASK_ID"
         val db = this.readableDatabase
         var cursor: Cursor? = null
         try {
@@ -104,18 +106,45 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
         var taskCategory: Int
         var taskDescription: String
         var taskDeadline: String?
-        var taskStatus: String
+        var taskStatus: Int
         if (cursor.moveToFirst()) {
             do {
                 taskId = cursor.getInt(cursor.getColumnIndex(TASK_ID))
                 taskCategory = cursor.getInt(cursor.getColumnIndex(CATEGORY_ICON_UNICODE))
                 taskDescription = cursor.getString(cursor.getColumnIndex(TASK_DESCRIPTION))
                 taskDeadline = cursor.getString(cursor.getColumnIndex(TASK_DEADLINE))
-                taskStatus = cursor.getString(cursor.getColumnIndex(TASK_STATUS))
+                taskStatus = cursor.getInt(cursor.getColumnIndex(TASK_STATUS))
                 val task = TaskModelClass(taskId, taskCategory, taskDescription, taskDeadline, taskStatus)
                 taskList.add(task)
             } while (cursor.moveToNext())
         }
         return taskList
+    }
+
+    fun selectAllCategories():Array<String>{
+        val categoryList: ArrayList<String> = ArrayList<String>()
+        val selectQuery = "SELECT $CATEGORY_NAME, $CATEGORY_ICON_UNICODE FROM $TABLE_CATEGORIES ORDER BY $CATEGORY_ID"
+
+        val db = this.readableDatabase
+        var cursor: Cursor? = null
+        try {
+            cursor = db.rawQuery(selectQuery, null)
+        }
+        catch (e: SQLiteException) {
+            db.execSQL(selectQuery)
+            return arrayOf<String>()
+        }
+        var categoryName: String
+        var categoryUnicode: Int
+        if (cursor.moveToFirst()) {
+            do {
+                categoryName = cursor.getString(cursor.getColumnIndex(CATEGORY_NAME))
+                categoryUnicode = cursor.getInt(cursor.getColumnIndex(CATEGORY_ICON_UNICODE))
+                val category = categoryName + " " + String(Character.toChars(categoryUnicode))
+                categoryList.add(category)
+            } while (cursor.moveToNext())
+        }
+        val categoryArray: Array<String> = categoryList.toTypedArray()
+        return categoryArray
     }
 }

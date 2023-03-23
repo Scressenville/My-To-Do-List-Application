@@ -33,23 +33,23 @@ class MyGridAdapter(context: Context, taskArrayList: ArrayList<TaskModelClass>) 
             val dateFormat = SimpleDateFormat("dd-MM-yyyy HH:mm")
             val minutesDifference = TimeUnit.MINUTES.convert((dateFormat.parse(task.taskDeadLine).time - Date().time), TimeUnit.MILLISECONDS)
 
-            if (minutesDifference < 0) {
+            if (task.taskStatus == -1) {
                 postItBanner.setBackgroundResource(R.color.red_post_it_dark)
                 postItContent.setBackgroundResource(R.color.red_post_it)
             }
 
-            if (minutesDifference >= 0) {
+            if (task.taskStatus == 0) {
                 postItBanner.setBackgroundResource(R.color.green_post_it_dark)
                 postItContent.setBackgroundResource(R.color.green_post_it)
             }
         }
 
-        if (task.taskDeadLine == null) {
+        if (task.taskDeadLine == null && task.taskStatus == 0) {
             postItBanner.setBackgroundResource(R.color.yellow_post_it_dark)
             postItContent.setBackgroundResource(R.color.yellow_post_it)
         }
 
-        if (task.taskStatus == "Terminee") {
+        if (task.taskStatus == 1) {
             postItBanner.setBackgroundResource(R.color.blue_post_it_dark)
             postItContent.setBackgroundResource(R.color.blue_post_it)
         }
