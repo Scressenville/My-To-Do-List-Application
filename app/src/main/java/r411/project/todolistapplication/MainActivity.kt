@@ -77,14 +77,16 @@ class MainActivity : AppCompatActivity() {
         val dialogView = inflater.inflate(R.layout.details_dialog, null)
         dialogBuilder.setView(dialogView)
 
+        val b = dialogBuilder.create()
+
         val dbhandler: DatabaseHandler = DatabaseHandler(this)
+        println("Id de la tache : " + view.id)
         val task = dbhandler.selectTaskFromId(view.id)
 
         dialogView.findViewById<TextView>(R.id.detail_post_it_shade).text = String(Character.toChars(task!!.taskCategory))
         dialogView.findViewById<TextView>(R.id.detail_content).text= task.taskDescription
         dialogView.findViewById<TextView>(R.id.detail_time_date).text = task.taskDeadLine
 
-        val b = dialogBuilder.create()
         b.show()
     }
 

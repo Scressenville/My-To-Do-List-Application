@@ -31,7 +31,8 @@
             android:layout_marginBottom="7dp"
             android:clickable="true"
             app:backgroundTint="@color/green_post_it"
-            app:srcCompat="@drawable/crayon" />
+            app:srcCompat="@drawable/crayon"
+            app:elevation="0dp" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/detail_close_button"
@@ -47,7 +48,8 @@
             android:layout_marginBottom="6dp"
             android:clickable="true"
             app:backgroundTint="@color/green_post_it"
-            app:srcCompat="@drawable/close_button" />
+            app:srcCompat="@drawable/close_button"
+            app:elevation="0dp"/>
 
         <TextView
             android:id="@+id/detail_post_it_shade"
@@ -115,7 +117,8 @@
             android:text="Tâche réalisée !"
             android:textAllCaps="false"
             android:textColor="@color/black"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            style="?android:attr/borderlessButtonStyle" />
 
         <Button
             android:id="@+id/delete_task"
@@ -133,7 +136,8 @@
             android:fontFamily="@font/the_delicate"
             android:text="Supprimer la tâche"
             android:textAllCaps="false"
-            android:textColor="@color/black" />
+            android:textColor="@color/black"
+            style="?android:attr/borderlessButtonStyle" />
     </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

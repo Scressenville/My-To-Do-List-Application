@@ -132,6 +132,7 @@
                 android:textAllCaps="false"
                 android:padding="5dp"
                 android:layout_marginTop="10dp"
+                app:elevation="0dp"
                 style="?android:attr/borderlessButtonStyle"/>
         </LinearLayout>
     </RelativeLayout>
