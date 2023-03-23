@@ -121,16 +121,16 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
         return taskList
     }
 
-    fun selectAllCategories():Array<String>{
+    fun selectAllCategories():Array<String> {
         val categoryList: ArrayList<String> = ArrayList<String>()
-        val selectQuery = "SELECT $CATEGORY_NAME, $CATEGORY_ICON_UNICODE FROM $TABLE_CATEGORIES ORDER BY $CATEGORY_ID"
+        val selectQuery =
+            "SELECT $CATEGORY_NAME, $CATEGORY_ICON_UNICODE FROM $TABLE_CATEGORIES ORDER BY $CATEGORY_ID"
 
         val db = this.readableDatabase
         var cursor: Cursor? = null
         try {
             cursor = db.rawQuery(selectQuery, null)
-        }
-        catch (e: SQLiteException) {
+        } catch (e: SQLiteException) {
             db.execSQL(selectQuery)
             return arrayOf<String>()
         }
@@ -146,5 +146,30 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
         }
         val categoryArray: Array<String> = categoryList.toTypedArray()
         return categoryArray
+    }
+
+    fun selectTaskFromId(id: Int): TaskModelClass?{
+        val selectQuery = "SELECT $TASK_ID, $CATEGORY_ICON_UNICODE, $TASK_DESCRIPTION, $TASK_DEADLINE, $TASK_STATUS " +
+                "FROM $TABLE_TASKS T INNER JOIN $TABLE_CATEGORIES C ON T.$TASK_CATEGORY = C.$CATEGORY_NAME " +
+                "WHERE $TASK_ID=$id"
+        val db = this.readableDatabase
+        var cursor: Cursor? = null
+        try {
+            cursor = db.rawQuery(selectQuery, null)
+        }
+        catch (e: SQLiteException) {
+            db.execSQL(selectQuery)
+            return null
+        }
+        cursor.moveToFirst()
+        val taskId: Int = cursor.getInt(cursor.getColumnIndex(TASK_ID))
+        val taskCategory: Int = cursor.getInt(cursor.getColumnIndex(CATEGORY_ICON_UNICODE))
+        val taskDescription: String = cursor.getString(cursor.getColumnIndex(TASK_DESCRIPTION))
+        val taskDeadline: String? = cursor.getString(cursor.getColumnIndex(TASK_DEADLINE))
+        val taskStatus: Int = cursor.getInt(cursor.getColumnIndex(TASK_STATUS))
+
+        val task = TaskModelClass(taskId, taskCategory, taskDescription, taskDeadline, taskStatus)
+
+        return task
     }
 }

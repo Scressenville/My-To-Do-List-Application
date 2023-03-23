@@ -31,8 +31,7 @@
             android:layout_marginBottom="7dp"
             android:clickable="true"
             app:backgroundTint="@color/green_post_it"
-            app:srcCompat="@drawable/crayon"
-            app:elevation="0dp"/>
+            app:srcCompat="@drawable/crayon" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/detail_close_button"
@@ -48,8 +47,7 @@
             android:layout_marginBottom="6dp"
             android:clickable="true"
             app:backgroundTint="@color/green_post_it"
-            app:srcCompat="@drawable/close_button"
-            app:elevation="0dp"/>
+            app:srcCompat="@drawable/close_button" />
 
         <TextView
             android:id="@+id/detail_post_it_shade"
@@ -69,7 +67,23 @@
             android:textColor="@color/black" />
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/detail_time_date"
+            android:layout_width="181dp"
+            android:layout_height="33dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="85dp"
+            android:layout_marginTop="229dp"
+            android:layout_marginEnd="84dp"
+            android:layout_marginBottom="88dp"
+            android:text="Date et heure"
+            android:gravity="center"
+            android:textColor="#000000" />
+
+        <TextView
+            android:id="@+id/detail_content"
             android:layout_width="287dp"
             android:layout_height="138dp"
             android:layout_alignParentStart="true"
@@ -101,8 +115,7 @@
             android:text="Tâche réalisée !"
             android:textAllCaps="false"
             android:textColor="@color/black"
-            android:textSize="14sp"
-            style="?android:attr/borderlessButtonStyle"/>
+            android:textSize="14sp" />
 
         <Button
             android:id="@+id/delete_task"
@@ -120,8 +133,7 @@
             android:fontFamily="@font/the_delicate"
             android:text="Supprimer la tâche"
             android:textAllCaps="false"
-            android:textColor="@color/black"
-            style="?android:attr/borderlessButtonStyle"/>
+            android:textColor="@color/black" />
     </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
