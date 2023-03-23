@@ -40,7 +40,8 @@
             android:src="@drawable/add_icon"
             app:backgroundTint="@color/banner_dark"
             app:fabCustomSize="45dp"
-            android:onClick="addTask"/>
+            android:onClick="showAddTaskDialog"
+            app:elevation="0dp"/>
     </RelativeLayout>
 
     <LinearLayout

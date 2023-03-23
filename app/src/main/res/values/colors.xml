@@ -12,12 +12,12 @@
     <color name="banner">#87F1AA</color>
     <color name="banner_dark">#7ADA9A</color>
     <color name="red_post_it">#FFC1BF</color>
-    <color name="red_post_it_dark">#FBAFAE</color>
+    <color name="red_post_it_dark">#FCB8B6</color>
     <color name="yellow_post_it">#F9E871</color>
     <color name="yellow_post_it_dark">#FBDF7E</color>
     <color name="green_post_it">#CEF59F</color>
-    <color name="green_post_it_dark">#B2ED8A</color>
+    <color name="green_post_it_dark">#BDF09B</color>
     <color name="blue_post_it">#ABE3FF</color>
-    <color name="blue_post_it_dark">#A3CBF4</color>
+    <color name="blue_post_it_dark">#A3D9F5</color>
     <color name="font_color">#2E2E2E</color>
 </resources>
