@@ -68,7 +68,10 @@
                 android:layout_height="100dp"
                 android:background="@color/green_post_it_dark"
                 android:textColor="@color/black"
-                android:singleLine="true" />
+                android:maxLines="5"
+                android:maxLength="90"
+                android:inputType="textCapSentences|textMultiLine"
+                android:singleLine="true"/>
 
             <LinearLayout
                 android:layout_width="match_parent"

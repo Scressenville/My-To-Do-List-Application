@@ -37,7 +37,7 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
             "INSERT INTO $TABLE_CATEGORIES ($CATEGORY_NAME, $CATEGORY_ICON_UNICODE) VALUES " +
                 "('Courses', '0x1f6d2')," +
                 "('Menage', '0x1f9f9')," +
-                "('Travail', '0x270f')," +
+                "('Travail', '0x1f4dd')," +
                 "('Evenement', '0x1f38a')," +
                 "('Cuisine', '0x1f370')," +
                 "('Medical', '0x1fa7a')," +
@@ -172,5 +172,16 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
 
         val task = TaskModelClass(taskId, taskCategory, taskDescription, taskDeadline, taskStatus)
         return task
+    }
+
+    fun deleteTask(deleteId: Int): Int {
+        val db = this.writableDatabase
+        val contentValues = ContentValues()
+        contentValues.put(TASK_ID, deleteId)
+
+        val success = db.delete(TABLE_TASKS, "$TASK_ID=$deleteId",null)
+        //2nd argument is String containing nullColumnHack
+        db.close() // Closing database connection
+        return success
     }
 }
