@@ -14,7 +14,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
 
-class MyGridAdapter(context: Context, taskArrayList: ArrayList<TaskModelClass>) :
+class MyGridAdapter(context: Context, var taskArrayList: ArrayList<TaskModelClass>) :
     ArrayAdapter<TaskModelClass>(context, R.layout.post_it, taskArrayList) {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
@@ -29,9 +29,12 @@ class MyGridAdapter(context: Context, taskArrayList: ArrayList<TaskModelClass>) 
         val postItBanner = listitemView!!.findViewById<TextView>(R.id.post_it_shade)
         val postItContent = listitemView.findViewById<TextView>(R.id.post_it_content)
 
-        if (task!!.taskDeadLine != null) {
+        if (task!!.taskDeadLine != null && task.taskStatus != 1) {
             val dateFormat = SimpleDateFormat("dd-MM-yyyy HH:mm")
             val minutesDifference = TimeUnit.MINUTES.convert((dateFormat.parse(task.taskDeadLine).time - Date().time), TimeUnit.MILLISECONDS)
+            if (minutesDifference < 0) {
+                task.taskStatus = -1
+            }
 
             if (task.taskStatus == -1) {
                 postItBanner.setBackgroundResource(R.color.red_post_it_dark)
