@@ -7,8 +7,11 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
+import r411.project.todolistapplication.MainActivity
 import r411.project.todolistapplication.R
 import r411.project.todolistapplication.classes.TaskModelClass
+import r411.project.todolistapplication.handler.DatabaseHandler
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -29,11 +32,16 @@ class MyGridAdapter(context: Context, var taskArrayList: ArrayList<TaskModelClas
         val postItBanner = listitemView!!.findViewById<TextView>(R.id.post_it_shade)
         val postItContent = listitemView.findViewById<TextView>(R.id.post_it_content)
 
-        if (task!!.taskDeadLine != null && task.taskStatus != 1) {
+        val postItLayout = listitemView.findViewWithTag<LinearLayout>("postItLayout")
+        postItLayout.id = task!!.taskId
+
+        if (task.taskDeadLine != null && task.taskStatus != 1) {
             val dateFormat = SimpleDateFormat("dd-MM-yyyy HH:mm")
             val minutesDifference = TimeUnit.MINUTES.convert((dateFormat.parse(task.taskDeadLine).time - Date().time), TimeUnit.MILLISECONDS)
             if (minutesDifference < 0) {
                 task.taskStatus = -1
+                val test = DatabaseHandler(this.context)
+                test.changeStatusLate(task.taskId)
             }
 
             if (task.taskStatus == -1) {
@@ -55,13 +63,13 @@ class MyGridAdapter(context: Context, var taskArrayList: ArrayList<TaskModelClas
         if (task.taskStatus == 1) {
             postItBanner.setBackgroundResource(R.color.blue_post_it_dark)
             postItContent.setBackgroundResource(R.color.blue_post_it)
+            listitemView.findViewById<LinearLayout>(task.taskId).setOnClickListener{
+                Toast.makeText(this.context, "test", Toast.LENGTH_SHORT).show()
+            }
         }
 
         postItBanner.text = String(Character.toChars(task.taskCategory))
         postItContent.text = task.taskDescription
-
-        val postItLayout = listitemView.findViewWithTag<LinearLayout>("postItLayout")
-        postItLayout.id = task.taskId
 
         return listitemView
     }

@@ -11,4 +11,8 @@
     <string name="btn_task_done">Tâche réalisée !</string>
     <string name="btn_delete_task">Supprimer la tâche</string>
     <string name="null_deadline">Non renseignée</string>
+    <string name="fab_btn_close">Fermer</string>
+    <string name="fab_btn_modify">Modifier</string>
+    <string name="add_category">Catégorie :</string>
+    <string name="description_input_hint">Description de la tâche…</string>
 </resources>

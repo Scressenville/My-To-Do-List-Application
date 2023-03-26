@@ -184,4 +184,26 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
         db.close() // Closing database connection
         return success
     }
+
+    fun changeStatusLate(taskId: Int): Int {
+        val db = this.writableDatabase
+        val contentValues = ContentValues()
+        contentValues.put(TASK_STATUS, -1)
+
+        val success = db.update(TABLE_TASKS, contentValues, "$TASK_ID=$taskId", null)
+        db.close()
+
+        return success
+    }
+
+    fun changeStatusFinished(taskId: Int): Int {
+        val db = this.writableDatabase
+        val contentValues = ContentValues()
+        contentValues.put(TASK_STATUS, 1)
+
+        val success = db.update(TABLE_TASKS, contentValues, "$TASK_ID=$taskId", null)
+        db.close()
+
+        return success
+    }
 }

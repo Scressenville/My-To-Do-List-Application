@@ -2,7 +2,6 @@ package r411.project.todolistapplication
 
 import android.content.DialogInterface
 import android.content.res.ColorStateList
-import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
@@ -17,7 +16,6 @@ import r411.project.todolistapplication.adapter.MyGridAdapter
 import r411.project.todolistapplication.classes.TaskModelClass
 import r411.project.todolistapplication.handler.DatabaseHandler
 import kotlin.collections.ArrayList
-
 
 class MainActivity : AppCompatActivity() {
 
@@ -99,17 +97,15 @@ class MainActivity : AppCompatActivity() {
         val task = dbhandler.selectTaskFromId(view.id)
 
         dialogView.findViewById<TextView>(R.id.task_category).text = String(Character.toChars(task!!.taskCategory))
-        dialogView.findViewById<TextView>(R.id.details_description).setMovementMethod(ScrollingMovementMethod.getInstance());
-        dialogView.findViewById<TextView>(R.id.details_description).text= task.taskDescription
+        val desc = dialogView.findViewById<TextView>(R.id.details_description)
+        desc.movementMethod = ScrollingMovementMethod.getInstance();
+        desc.text= task.taskDescription
 
         val lightElements = listOf(
-            dialogView.findViewById<FloatingActionButton>(R.id.detail_close_button),
+            dialogView.findViewById<LinearLayout>(R.id.details_content),
             dialogView.findViewById<FloatingActionButton>(R.id.detail_modify_button),
-            dialogView.findViewById<Button>(R.id.details_content)
+            dialogView.findViewById<FloatingActionButton>(R.id.detail_close_button)
         )
-
-        val test = dialogView.findViewById<FloatingActionButton>(R.id.detail_close_button)
-        println(test.backgroundTintList)
 
         val darkElements = listOf(
             dialogView.findViewById<LinearLayout>(R.id.details_banner),
@@ -117,20 +113,11 @@ class MainActivity : AppCompatActivity() {
             dialogView.findViewById<Button>(R.id.delete_task)
         )
 
-        if (task.taskDeadLine == null && task.taskStatus == 0) {
-            for (element in lightElements) element.setBackgroundResource(R.color.yellow_post_it)
-            for (element in darkElements) element.setBackgroundResource(R.color.yellow_post_it_dark)
-        }
+        val shadeColor = (view.findViewById<TextView>(R.id.post_it_shade).background as ColorDrawable).color
+        val lightColor = (view.findViewById<TextView>(R.id.post_it_content).background as ColorDrawable).color
 
-        if (task.taskStatus == -1) {
-            for (element in lightElements) element.setBackgroundResource(R.color.red_post_it)
-            for (element in darkElements) element.setBackgroundResource(R.color.red_post_it_dark)
-        }
-
-        if (task.taskStatus == 1) {
-            for (element in lightElements) element.setBackgroundResource(R.color.blue_post_it)
-            for (element in darkElements) element.setBackgroundResource(R.color.blue_post_it_dark)
-        }
+        darkElements.forEach{element -> element.backgroundTintList = ColorStateList.valueOf(shadeColor)}
+        lightElements.forEach{element -> element.backgroundTintList = ColorStateList.valueOf(lightColor)}
 
         val taskDeadline = dialogView.findViewById<TextView>(R.id.details_deadline)
         if (task.taskDeadLine != null) taskDeadline.text=task.taskDeadLine
@@ -141,6 +128,10 @@ class MainActivity : AppCompatActivity() {
 
         dialogView.findViewById<Button>(R.id.delete_task).setOnClickListener{
             deleteTask(view, b)
+        }
+
+        dialogView.findViewById<Button>(R.id.task_complete).setOnClickListener{
+            finishTask(view, b)
         }
 
         b.show()
@@ -184,7 +175,7 @@ class MainActivity : AppCompatActivity() {
 
             val status = databaseHandler.deleteTask(deleteId)
             if(status > -1){
-                Toast.makeText(applicationContext,"Task deleted",Toast.LENGTH_LONG).show()
+                Toast.makeText(applicationContext,"Tâche supprimée",Toast.LENGTH_LONG).show()
                 val adapter: MyGridAdapter = findViewById<GridView>(R.id.content).adapter as MyGridAdapter
                 adapter.taskArrayList.remove(deletedTask)
                 adapter.notifyDataSetChanged()
@@ -197,5 +188,18 @@ class MainActivity : AppCompatActivity() {
         })
         val b = dialogBuilder.create()
         b.show()
+    }
+
+    fun finishTask(view: View, dialog: AlertDialog){
+        val databaseHandler = DatabaseHandler(this)
+        val updatedTask = databaseHandler.selectTaskFromId(view.id)
+        val result = databaseHandler.changeStatusFinished(view.id)
+        if (result > -1) {
+            Toast.makeText(applicationContext,"Tâche réalisée !",Toast.LENGTH_LONG).show()
+            val adapter: MyGridAdapter = findViewById<GridView>(R.id.content).adapter as MyGridAdapter
+            adapter.taskArrayList[adapter.taskArrayList.indexOf(updatedTask)].taskStatus = 1
+            adapter.notifyDataSetChanged()
+            dialog.dismiss()
+        }
     }
 }
