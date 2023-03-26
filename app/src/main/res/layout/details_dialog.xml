@@ -103,7 +103,6 @@
                 android:gravity="center"
                 android:text="@string/null_deadline"/>
 
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
@@ -134,5 +133,4 @@
             </LinearLayout>
         </LinearLayout>
     </RelativeLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

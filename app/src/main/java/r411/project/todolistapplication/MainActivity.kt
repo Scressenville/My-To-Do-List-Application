@@ -37,6 +37,7 @@ class MainActivity : AppCompatActivity() {
 
         val dbhandler: DatabaseHandler = DatabaseHandler(this)
         val taskList: ArrayList<TaskModelClass> = dbhandler.selectAllTasks()
+        taskList.sortWith(compareBy { it.taskStatus })
         val adapter = MyGridAdapter(this, taskList)
         findViewById<GridView>(R.id.content).adapter = adapter
 
@@ -86,41 +87,47 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun viewTask(view: View){
+        val dbhandler = DatabaseHandler(this)
+        val task = dbhandler.selectTaskFromId(view.id)
+
         val dialogBuilder = AlertDialog.Builder(this)
         val inflater = this.layoutInflater
-        val dialogView = inflater.inflate(R.layout.details_dialog, null)
+        val dialogView: View
+        if (task!!.taskStatus!=1) {
+            dialogView = inflater.inflate(R.layout.details_dialog, null)
+
+            val lightElements = listOf(
+                dialogView.findViewById<LinearLayout>(R.id.details_content),
+                dialogView.findViewById<FloatingActionButton>(R.id.detail_modify_button),
+                dialogView.findViewById<FloatingActionButton>(R.id.detail_close_button)
+            )
+
+            val darkElements = listOf(
+                dialogView.findViewById<LinearLayout>(R.id.details_banner),
+                dialogView.findViewById<Button>(R.id.task_complete),
+                dialogView.findViewById<Button>(R.id.delete_task)
+            )
+
+            val shadeColor = (view.findViewById<TextView>(R.id.post_it_shade).background as ColorDrawable).color
+            val lightColor = (view.findViewById<TextView>(R.id.post_it_content).background as ColorDrawable).color
+
+            darkElements.forEach{element -> element.backgroundTintList = ColorStateList.valueOf(shadeColor)}
+            lightElements.forEach{element -> element.backgroundTintList = ColorStateList.valueOf(lightColor)}
+
+            val taskDeadline = dialogView.findViewById<TextView>(R.id.details_deadline)
+            if (task.taskDeadLine != null) taskDeadline.text=task.taskDeadLine
+        }
+        else {
+            dialogView = inflater.inflate(R.layout.finished_task_details_dialog, null)
+        }
         dialogBuilder.setView(dialogView)
 
         val b = dialogBuilder.create()
 
-        val dbhandler = DatabaseHandler(this)
-        val task = dbhandler.selectTaskFromId(view.id)
-
-        dialogView.findViewById<TextView>(R.id.task_category).text = String(Character.toChars(task!!.taskCategory))
+        dialogView.findViewById<TextView>(R.id.task_category).text = String(Character.toChars(task.taskCategory))
         val desc = dialogView.findViewById<TextView>(R.id.details_description)
         desc.movementMethod = ScrollingMovementMethod.getInstance();
         desc.text= task.taskDescription
-
-        val lightElements = listOf(
-            dialogView.findViewById<LinearLayout>(R.id.details_content),
-            dialogView.findViewById<FloatingActionButton>(R.id.detail_modify_button),
-            dialogView.findViewById<FloatingActionButton>(R.id.detail_close_button)
-        )
-
-        val darkElements = listOf(
-            dialogView.findViewById<LinearLayout>(R.id.details_banner),
-            dialogView.findViewById<Button>(R.id.task_complete),
-            dialogView.findViewById<Button>(R.id.delete_task)
-        )
-
-        val shadeColor = (view.findViewById<TextView>(R.id.post_it_shade).background as ColorDrawable).color
-        val lightColor = (view.findViewById<TextView>(R.id.post_it_content).background as ColorDrawable).color
-
-        darkElements.forEach{element -> element.backgroundTintList = ColorStateList.valueOf(shadeColor)}
-        lightElements.forEach{element -> element.backgroundTintList = ColorStateList.valueOf(lightColor)}
-
-        val taskDeadline = dialogView.findViewById<TextView>(R.id.details_deadline)
-        if (task.taskDeadLine != null) taskDeadline.text=task.taskDeadLine
 
         dialogView.findViewById<ImageView>(R.id.detail_close_button).setOnClickListener{
             b.dismiss()
@@ -141,7 +148,7 @@ class MainActivity : AppCompatActivity() {
         val category = view.findViewById<Spinner>(R.id.dropdown).selectedItemPosition + 1
         //val description = view.findViewById<EditText>(R.id.task_description_input).text.toString().replace("\n", " ")
         val description = view.findViewById<EditText>(R.id.task_description_input).text.toString()
-        val deadline = null
+        val deadline = "26-03-2023 10:00"
 
         println(description.lines().take(6).joinToString(separator = "\n"))
         val databaseHandler = DatabaseHandler(this)

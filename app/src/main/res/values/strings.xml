@@ -15,4 +15,5 @@
     <string name="fab_btn_modify">Modifier</string>
     <string name="add_category">Catégorie :</string>
     <string name="description_input_hint">Description de la tâche…</string>
+    <string name="details_btn_reprogram">Reprogrammer</string>
 </resources>

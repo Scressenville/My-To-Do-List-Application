@@ -7,8 +7,6 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
-import r411.project.todolistapplication.MainActivity
 import r411.project.todolistapplication.R
 import r411.project.todolistapplication.classes.TaskModelClass
 import r411.project.todolistapplication.handler.DatabaseHandler
@@ -21,10 +19,8 @@ class MyGridAdapter(context: Context, var taskArrayList: ArrayList<TaskModelClas
     ArrayAdapter<TaskModelClass>(context, R.layout.post_it, taskArrayList) {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-
         var listitemView = convertView
         if (listitemView == null) {
-            // Layout Inflater inflates each item to be displayed in GridView.
             listitemView = LayoutInflater.from(context).inflate(R.layout.post_it, parent, false)
         }
 
@@ -55,17 +51,9 @@ class MyGridAdapter(context: Context, var taskArrayList: ArrayList<TaskModelClas
             }
         }
 
-        if (task.taskDeadLine == null && task.taskStatus == 0) {
-            postItBanner.setBackgroundResource(R.color.yellow_post_it_dark)
-            postItContent.setBackgroundResource(R.color.yellow_post_it)
-        }
-
         if (task.taskStatus == 1) {
             postItBanner.setBackgroundResource(R.color.blue_post_it_dark)
             postItContent.setBackgroundResource(R.color.blue_post_it)
-            listitemView.findViewById<LinearLayout>(task.taskId).setOnClickListener{
-                Toast.makeText(this.context, "test", Toast.LENGTH_SHORT).show()
-            }
         }
 
         postItBanner.text = String(Character.toChars(task.taskCategory))
