@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="350dp"
+        android:layout_height="350dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/details_banner"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="0dp"
+            android:layout_marginEnd="0dp"
+            android:background="@color/blue_post_it_dark"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/task_category"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="120dp"
+                android:layout_marginEnd="20dp"
+                android:gravity="center"
+                android:textSize="40sp" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/detail_close_button"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="40dp"
+                android:layout_marginBottom="20dp"
+                android:contentDescription="@string/fab_btn_close"
+                android:fadingEdge="none"
+                android:src="@drawable/close_button"
+                app:backgroundTint="@color/blue_post_it"
+                app:elevation="0dp"
+                app:fabCustomSize="60dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/details_content"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:layout_below="@+id/details_banner"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:background="@color/blue_post_it"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/details_description"
+                android:layout_width="match_parent"
+                android:layout_height="110dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginRight="20dp"
+                android:gravity="center"
+                android:maxLines="10"
+                android:padding="5dp"
+                android:scrollbars="vertical"
+                android:textColor="@color/black" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:layout_marginTop="50dp">
+
+                <Button
+                    android:id="@+id/task_complete"
+                    android:layout_width="130dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:background="@color/blue_post_it_dark"
+                    android:fontFamily="@font/the_delicate"
+                    android:text="@string/details_btn_reprogram"
+                    android:textAllCaps="false"
+                    android:textColor="@color/black" />
+
+                <Button
+                    android:id="@+id/delete_task"
+                    android:layout_width="130dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:background="@color/blue_post_it_dark"
+                    android:fontFamily="@font/the_delicate"
+                    android:text="@string/btn_delete_task"
+                    android:textAllCaps="false"
+                    android:textColor="@color/black" />
+            </LinearLayout>
+        </LinearLayout>
+    </RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
