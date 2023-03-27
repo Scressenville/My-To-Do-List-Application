@@ -206,4 +206,32 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
 
         return success
     }
+
+    fun getCategoryIdByEmoji(emojiCode: Int): Int {
+        val selectQuery = "SELECT $CATEGORY_ID FROM $TABLE_CATEGORIES WHERE $CATEGORY_ICON_UNICODE=$emojiCode"
+        val db = this.readableDatabase
+        var cursor: Cursor? = null
+        try {
+            cursor = db.rawQuery(selectQuery, null)
+        }
+        catch (e: SQLiteException) {
+            db.execSQL(selectQuery)
+            return -1
+        }
+        cursor.moveToFirst()
+        return cursor.getInt(cursor.getColumnIndex(CATEGORY_ID))
+    }
+
+    fun modifyTask(taskId: Int, category: Int, description: String, deadline: String?): Int {
+        val db = this.writableDatabase
+        val contentValues = ContentValues()
+        contentValues.put(TASK_CATEGORY, category)
+        contentValues.put(TASK_DESCRIPTION, description)
+        contentValues.put(TASK_DEADLINE, deadline)
+
+        val success = db.update(TABLE_TASKS, contentValues, "$TASK_ID=$taskId", null)
+        db.close()
+
+        return success
+    }
 }

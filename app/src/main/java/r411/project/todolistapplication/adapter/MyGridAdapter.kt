@@ -56,6 +56,11 @@ class MyGridAdapter(context: Context, var taskArrayList: ArrayList<TaskModelClas
             postItContent.setBackgroundResource(R.color.blue_post_it)
         }
 
+        if (task.taskStatus == 0 && task.taskDeadLine == null) {
+            postItBanner.setBackgroundResource(R.color.yellow_post_it_dark)
+            postItContent.setBackgroundResource(R.color.yellow_post_it)
+        }
+
         postItBanner.text = String(Character.toChars(task.taskCategory))
         postItContent.text = task.taskDescription
 

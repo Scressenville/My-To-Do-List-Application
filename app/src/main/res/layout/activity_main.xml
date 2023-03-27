@@ -28,7 +28,7 @@
             android:textSize="20sp" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/floatingActionButton1"
+            android:id="@+id/add_task_btn"
             android:layout_width="45dp"
             android:layout_height="45dp"
             android:layout_alignParentEnd="true"
@@ -37,11 +37,11 @@
             android:layout_weight="1"
             android:clickable="true"
             android:fadingEdge="none"
+            android:onClick="showAddTaskDialog"
             android:src="@drawable/add_icon"
             app:backgroundTint="@color/banner_dark"
-            app:fabCustomSize="45dp"
-            android:onClick="showAddTaskDialog"
-            app:elevation="0dp"/>
+            app:elevation="0dp"
+            app:fabCustomSize="45dp" />
     </RelativeLayout>
 
     <LinearLayout

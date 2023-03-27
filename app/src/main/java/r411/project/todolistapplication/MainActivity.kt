@@ -41,10 +41,123 @@ class MainActivity : AppCompatActivity() {
         val adapter = MyGridAdapter(this, taskList)
         findViewById<GridView>(R.id.content).adapter = adapter
 
+        findViewById<FloatingActionButton>(R.id.add_task_btn).setOnClickListener{
+            showAddTaskDialog(null, null)
+        }
         mainHandler = Handler(Looper.getMainLooper())
     }
 
-    fun showAddTaskDialog(view: View){
+    override fun onPause() {
+        super.onPause()
+        mainHandler.removeCallbacks(updateTasks)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mainHandler.post(updateTasks)
+    }
+
+    fun openDatePicker(view: View) {
+        println("coucou")
+    }
+
+    fun viewTaskHandler(view: View){
+        val dbhandler = DatabaseHandler(this)
+        val task = dbhandler.selectTaskFromId(view.id)
+
+        if (task!!.taskStatus!=1) {
+            viewUnfinishedTask(task, view)
+        }
+        else {
+            viewFinishedTask(task, view)
+        }
+    }
+
+    private fun viewFinishedTask(task: TaskModelClass, view: View) {
+        val dialogBuilder = AlertDialog.Builder(this)
+        val inflater = this.layoutInflater
+
+        val dialogView = inflater.inflate(R.layout.finished_task_details_dialog, null)
+        dialogBuilder.setView(dialogView)
+
+        val b = dialogBuilder.create()
+
+        dialogView.findViewById<TextView>(R.id.task_category).text = String(Character.toChars(task.taskCategory))
+        val desc = dialogView.findViewById<TextView>(R.id.details_description)
+        desc.movementMethod = ScrollingMovementMethod.getInstance();
+        desc.text= task.taskDescription
+
+        dialogView.findViewById<ImageView>(R.id.detail_close_button).setOnClickListener{
+            b.dismiss()
+        }
+
+        dialogView.findViewById<Button>(R.id.delete_task).setOnClickListener{
+            deleteTask(view, b)
+        }
+
+        dialogView.findViewById<Button>(R.id.reprogram_task).setOnClickListener{
+            Toast.makeText(applicationContext, "TODO", Toast.LENGTH_SHORT).show()
+        }
+
+        b.show()
+    }
+
+    private fun viewUnfinishedTask(task: TaskModelClass, view: View) {
+        val dialogBuilder = AlertDialog.Builder(this)
+        val inflater = this.layoutInflater
+
+        val dialogView = inflater.inflate(R.layout.details_dialog, null)
+
+        val lightElements = listOf(
+            dialogView.findViewById<LinearLayout>(R.id.details_content),
+            dialogView.findViewById<FloatingActionButton>(R.id.detail_modify_button),
+            dialogView.findViewById<FloatingActionButton>(R.id.detail_close_button)
+        )
+
+        val darkElements = listOf(
+            dialogView.findViewById<LinearLayout>(R.id.details_banner),
+            dialogView.findViewById<Button>(R.id.finish_task),
+            dialogView.findViewById<Button>(R.id.delete_task)
+        )
+
+        val shadeColor = (view.findViewById<TextView>(R.id.post_it_shade).background as ColorDrawable).color
+        val lightColor = (view.findViewById<TextView>(R.id.post_it_content).background as ColorDrawable).color
+
+        darkElements.forEach{element -> element.backgroundTintList = ColorStateList.valueOf(shadeColor)}
+        lightElements.forEach{element -> element.backgroundTintList = ColorStateList.valueOf(lightColor)}
+
+        val taskDeadline = dialogView.findViewById<TextView>(R.id.details_deadline)
+        if (task.taskDeadLine != null) taskDeadline.text=task.taskDeadLine
+        dialogBuilder.setView(dialogView)
+
+        val b = dialogBuilder.create()
+
+        dialogView.findViewById<TextView>(R.id.task_category).text = String(Character.toChars(task.taskCategory))
+        val desc = dialogView.findViewById<TextView>(R.id.details_description)
+        desc.movementMethod = ScrollingMovementMethod.getInstance();
+        desc.text= task.taskDescription
+
+        dialogView.findViewById<FloatingActionButton>(R.id.detail_close_button).setOnClickListener{
+            b.dismiss()
+        }
+
+        dialogView.findViewById<FloatingActionButton>(R.id.detail_modify_button).setOnClickListener{
+            showAddTaskDialog(null, task)
+            b.dismiss()
+        }
+
+        dialogView.findViewById<Button>(R.id.delete_task).setOnClickListener{
+            deleteTask(view, b)
+        }
+
+        dialogView.findViewById<Button>(R.id.finish_task).setOnClickListener{
+            finishTask(view, b)
+        }
+
+        b.show()
+    }
+
+    fun showAddTaskDialog(view: View?, task: TaskModelClass?){
         val dialogBuilder = AlertDialog.Builder(this)
         val inflater = this.layoutInflater
         val dialogView = inflater.inflate(R.layout.add_dialog, null)
@@ -69,86 +182,50 @@ class MainActivity : AppCompatActivity() {
             insertTask(dialogView, b)
         }
 
-        b.show()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        mainHandler.removeCallbacks(updateTasks)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        mainHandler.post(updateTasks)
-    }
-
-    fun openDatePicker(view: View) {
-        println("coucou")
-    }
-
-    fun viewTask(view: View){
-        val dbhandler = DatabaseHandler(this)
-        val task = dbhandler.selectTaskFromId(view.id)
-
-        val dialogBuilder = AlertDialog.Builder(this)
-        val inflater = this.layoutInflater
-        val dialogView: View
-        if (task!!.taskStatus!=1) {
-            dialogView = inflater.inflate(R.layout.details_dialog, null)
-
-            val lightElements = listOf(
-                dialogView.findViewById<LinearLayout>(R.id.details_content),
-                dialogView.findViewById<FloatingActionButton>(R.id.detail_modify_button),
-                dialogView.findViewById<FloatingActionButton>(R.id.detail_close_button)
-            )
-
-            val darkElements = listOf(
-                dialogView.findViewById<LinearLayout>(R.id.details_banner),
-                dialogView.findViewById<Button>(R.id.task_complete),
-                dialogView.findViewById<Button>(R.id.delete_task)
-            )
-
-            val shadeColor = (view.findViewById<TextView>(R.id.post_it_shade).background as ColorDrawable).color
-            val lightColor = (view.findViewById<TextView>(R.id.post_it_content).background as ColorDrawable).color
-
-            darkElements.forEach{element -> element.backgroundTintList = ColorStateList.valueOf(shadeColor)}
-            lightElements.forEach{element -> element.backgroundTintList = ColorStateList.valueOf(lightColor)}
-
-            val taskDeadline = dialogView.findViewById<TextView>(R.id.details_deadline)
-            if (task.taskDeadLine != null) taskDeadline.text=task.taskDeadLine
-        }
-        else {
-            dialogView = inflater.inflate(R.layout.finished_task_details_dialog, null)
-        }
-        dialogBuilder.setView(dialogView)
-
-        val b = dialogBuilder.create()
-
-        dialogView.findViewById<TextView>(R.id.task_category).text = String(Character.toChars(task.taskCategory))
-        val desc = dialogView.findViewById<TextView>(R.id.details_description)
-        desc.movementMethod = ScrollingMovementMethod.getInstance();
-        desc.text= task.taskDescription
-
-        dialogView.findViewById<ImageView>(R.id.detail_close_button).setOnClickListener{
-            b.dismiss()
-        }
-
-        dialogView.findViewById<Button>(R.id.delete_task).setOnClickListener{
-            deleteTask(view, b)
-        }
-
-        dialogView.findViewById<Button>(R.id.task_complete).setOnClickListener{
-            finishTask(view, b)
+        if(task!=null) {
+            dialogView.findViewById<Spinner>(R.id.dropdown).setSelection(dbhandler.getCategoryIdByEmoji(task.taskCategory)-1)
+            dialogView.findViewById<EditText>(R.id.task_description_input).setText(task.taskDescription)
+            btn.setText("Modifier")
+            btn.setOnClickListener{
+                modifyTask(dialogView, b, task.taskId)
+            }
         }
 
         b.show()
+    }
+
+    fun modifyTask(view: View, dialog: AlertDialog, taskId: Int) {
+        val category = view.findViewById<Spinner>(R.id.dropdown).selectedItemPosition + 1
+        //val description = view.findViewById<EditText>(R.id.task_description_input).text.toString().replace("\n", " ")
+        val description = view.findViewById<EditText>(R.id.task_description_input).text.toString()
+        val deadline = null
+
+        println(description.lines().take(6).joinToString(separator = "\n"))
+        val databaseHandler = DatabaseHandler(this)
+
+        if(description.trim()!=""){
+            val status = databaseHandler.modifyTask(taskId, category, description, deadline)
+            if(status > -1){
+                Toast.makeText(applicationContext,"Tâche modifiée !",Toast.LENGTH_LONG).show()
+                val adapter = findViewById<GridView>(R.id.content).adapter as MyGridAdapter
+                val taskIndex = adapter.taskArrayList.indexOfFirst { it.taskId == taskId }
+                val modifiedTask = databaseHandler.selectTaskFromId(taskId)
+                if (modifiedTask != null) {
+                    adapter.taskArrayList.set(taskIndex, modifiedTask)
+                }
+                adapter.notifyDataSetChanged()
+                dialog.dismiss()
+            }
+        }else{
+            Toast.makeText(applicationContext,"La description de la tâche ne peut pas être vide.",Toast.LENGTH_LONG).show()
+        }
     }
 
     fun insertTask(view: View, dialog: AlertDialog){
         val category = view.findViewById<Spinner>(R.id.dropdown).selectedItemPosition + 1
         //val description = view.findViewById<EditText>(R.id.task_description_input).text.toString().replace("\n", " ")
         val description = view.findViewById<EditText>(R.id.task_description_input).text.toString()
-        val deadline = "26-03-2023 10:00"
+        val deadline = null
 
         println(description.lines().take(6).joinToString(separator = "\n"))
         val databaseHandler = DatabaseHandler(this)

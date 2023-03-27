@@ -82,7 +82,7 @@
                 android:layout_marginTop="50dp">
 
                 <Button
-                    android:id="@+id/task_complete"
+                    android:id="@+id/reprogram_task"
                     android:layout_width="130dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="10dp"
