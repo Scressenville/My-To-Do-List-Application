@@ -2,11 +2,11 @@
     <string name="app_name">My To-Do List</string>
     <string name="task_add_confirm">Ajouter la tâche</string>
     <string name="task_description_input">Description de la tâche :</string>
-    <string name="task_deadline_date_picker">À réaliser avant le :</string>
+    <string name="task_deadline_date_picker">À réaliser avant le : </string>
     <string name="default_date_value">--/---/----</string>
     <string name="confirm_add_task">Ajouter la tâche</string>
     <string name="default_time_value">--:--</string>
-    <string name="task_deadline_time_picker">à :</string>
+    <string name="task_deadline_time_picker">à : </string>
     <string name="task_detail_deadline">Date limite :</string>
     <string name="btn_task_done">Tâche réalisée !</string>
     <string name="btn_delete_task">Supprimer la tâche</string>

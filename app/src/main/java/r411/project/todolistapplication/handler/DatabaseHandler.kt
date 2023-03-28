@@ -35,15 +35,15 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
 
         val INSERT_CATEGORIES = (
             "INSERT INTO $TABLE_CATEGORIES ($CATEGORY_NAME, $CATEGORY_ICON_UNICODE) VALUES " +
-                "('Courses', '0x1f6d2')," +
-                "('Menage', '0x1f9f9')," +
-                "('Travail', '0x1f4dd')," +
-                "('Evenement', '0x1f38a')," +
-                "('Cuisine', '0x1f370')," +
-                "('Medical', '0x1fa7a')," +
-                "('Famille', '0x1f468')," +
-                "('Animaux', '0x1f407')," +
-                "('Autres', '0x1f4d4');"
+                "('Courses', 0x1f6d2)," +
+                "('Menage', 0x1f9f9)," +
+                "('Travail', 0x1f4dd)," +
+                "('Evenement', 0x1f38a)," +
+                "('Cuisine', 0x1f370)," +
+                "('Medical', 0x1fa7a)," +
+                "('Famille', 0x1f468)," +
+                "('Animaux', 0x1f407)," +
+                "('Autres', 0x1f4d4);"
         )
 
         val CREATE_TASK_TABLE = (
@@ -200,18 +200,24 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
     }
 
     fun getCategoryIdByEmoji(emojiCode: Int): Int {
-        val selectQuery = "SELECT $CATEGORY_ID FROM $TABLE_CATEGORIES WHERE $CATEGORY_ICON_UNICODE=$emojiCode"
+        val selectQuery =
+            "SELECT $CATEGORY_ID, $CATEGORY_ICON_UNICODE FROM $TABLE_CATEGORIES"
+
         val db = this.readableDatabase
         var cursor: Cursor? = null
         try {
             cursor = db.rawQuery(selectQuery, null)
-        }
-        catch (e: SQLiteException) {
+        } catch (e: SQLiteException) {
             db.execSQL(selectQuery)
             return -1
         }
-        cursor.moveToFirst()
-        return cursor.getInt(cursor.getColumnIndex(CATEGORY_ID))
+        if (cursor.moveToFirst()) {
+            do {
+                var icon = cursor.getInt(cursor.getColumnIndex(CATEGORY_ICON_UNICODE))
+                if ( icon == emojiCode) return cursor.getInt(cursor.getColumnIndex(CATEGORY_ID))
+            } while (cursor.moveToNext())
+        }
+        return -1
     }
 
     fun modifyTask(taskId: Int, category: Int, description: String, deadline: String?): Int {

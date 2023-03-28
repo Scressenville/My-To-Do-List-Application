@@ -13,6 +13,7 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import org.w3c.dom.Text
 import r411.project.todolistapplication.adapter.MyGridAdapter
 import r411.project.todolistapplication.classes.TaskModelClass
 import r411.project.todolistapplication.handler.DatabaseHandler
@@ -23,9 +24,6 @@ import java.util.*
 class MainActivity : AppCompatActivity() {
 
     lateinit var mainHandler: Handler
-
-    lateinit var datePickerDialog: DatePickerDialog
-    lateinit var dateButton: Button
 
     private val updateTasks = object : Runnable {
         override fun run() {
@@ -41,7 +39,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val dbhandler: DatabaseHandler = DatabaseHandler(this)
+        val dbhandler = DatabaseHandler(this)
         val taskList: ArrayList<TaskModelClass> = dbhandler.selectAllTasks()
         taskList.sortWith(compareBy { it.taskStatus })
         val adapter = MyGridAdapter(this, taskList)
@@ -51,6 +49,7 @@ class MainActivity : AppCompatActivity() {
             showAddTaskDialog(null, null)
         }
         mainHandler = Handler(Looper.getMainLooper())
+        Locale.setDefault(Locale.FRANCE)
     }
 
     override fun onPause() {
@@ -185,8 +184,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         if(task!=null) {
-            dialogView.findViewById<Spinner>(R.id.dropdown).setSelection(dbhandler.getCategoryIdByEmoji(task.taskCategory)-1)
+            dropdown.setSelection(dbhandler.getCategoryIdByEmoji(task.taskCategory)-1)
             dialogView.findViewById<EditText>(R.id.task_description_input).setText(task.taskDescription)
+            dialogView.findViewById<TextView>(R.id.date_picker_text).text = SimpleDateFormat("dd MMMM yyyy").format(SimpleDateFormat("dd MMMM yyyy HH:mm").parse(task.taskDeadLine).time)
+            dialogView.findViewById<TextView>(R.id.time_picker_text).text = SimpleDateFormat("HH:mm").format(SimpleDateFormat("dd MMMM yyyy HH:mm").parse(task.taskDeadLine).time)
             btn.setText("Modifier")
             btn.setOnClickListener{
                 modifyTask(dialogView, b, task.taskId)
@@ -260,9 +261,24 @@ class MainActivity : AppCompatActivity() {
         val category = view.findViewById<Spinner>(R.id.dropdown).selectedItemPosition + 1
         //val description = view.findViewById<EditText>(R.id.task_description_input).text.toString().replace("\n", " ")
         val description = view.findViewById<EditText>(R.id.task_description_input).text.toString()
-        val deadline = null
+        var deadline: String? = null
+        val defaultDay = SimpleDateFormat("dd MMMM yyyy").format(Date())
+        val defaultTime = "23:59"
 
-        println(description.lines().take(6).joinToString(separator = "\n"))
+        val datePicked = dialog.findViewById<TextView>(R.id.date_picker_text)
+        val timePicked = dialog.findViewById<TextView>(R.id.time_picker_text)
+
+        if (datePicked!!.text != resources.getString(R.string.default_date_value)) {
+            deadline = datePicked.text.toString() + " " + defaultTime
+        }
+        if (timePicked!!.text != resources.getString(R.string.default_time_value)) {
+            deadline = defaultDay + " " + timePicked.text.toString().trim()
+        }
+        if (datePicked.text != resources.getString(R.string.default_date_value) && timePicked.text != resources.getString(R.string.default_time_value)){
+            deadline = datePicked.text.toString() + " " + timePicked.text.toString().trim()
+        }
+
+        //println(description.lines().take(6).joinToString(separator = "\n"))
         val databaseHandler = DatabaseHandler(this)
 
         if(description.trim()!=""){

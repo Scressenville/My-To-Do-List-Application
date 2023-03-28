@@ -34,7 +34,7 @@ class MyGridAdapter(context: Context, var taskArrayList: ArrayList<TaskModelClas
         if (task.taskDeadLine != null && task.taskStatus != 1) {
             val dateFormat = SimpleDateFormat("dd MMMM yyyy HH:mm")
             val minutesDifference = TimeUnit.MINUTES.convert((dateFormat.parse(task.taskDeadLine).time - Date().time), TimeUnit.MILLISECONDS)
-            if (minutesDifference < 0) {
+            if (task.taskStatus != -1 && minutesDifference < 0) {
                 task.taskStatus = -1
                 val test = DatabaseHandler(this.context)
                 test.changeStatusLate(task.taskId)
