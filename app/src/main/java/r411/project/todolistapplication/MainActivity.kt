@@ -1,5 +1,6 @@
 package r411.project.todolistapplication
 
+import android.app.DatePickerDialog
 import android.content.DialogInterface
 import android.content.res.ColorStateList
 import android.graphics.drawable.ColorDrawable
@@ -15,11 +16,16 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import r411.project.todolistapplication.adapter.MyGridAdapter
 import r411.project.todolistapplication.classes.TaskModelClass
 import r411.project.todolistapplication.handler.DatabaseHandler
-import kotlin.collections.ArrayList
+import java.text.SimpleDateFormat
+import java.util.*
+
 
 class MainActivity : AppCompatActivity() {
 
     lateinit var mainHandler: Handler
+
+    lateinit var datePickerDialog: DatePickerDialog
+    lateinit var dateButton: Button
 
     private val updateTasks = object : Runnable {
         override fun run() {
@@ -55,10 +61,6 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         mainHandler.post(updateTasks)
-    }
-
-    fun openDatePicker(view: View) {
-        println("coucou")
     }
 
     fun viewTaskHandler(view: View){
@@ -194,6 +196,66 @@ class MainActivity : AppCompatActivity() {
         b.show()
     }
 
+    fun openDatePicker(view: View){
+        Locale.setDefault(Locale.FRANCE)
+        val dialogBuilder = AlertDialog.Builder(this)
+        val inflater = this.layoutInflater
+        val dialogView = inflater.inflate(R.layout.date_picker, null)
+        dialogBuilder.setView(dialogView)
+
+        val datePicker = dialogView.findViewById<DatePicker>(R.id.datePicker1)
+        val today = Calendar.getInstance()
+        datePicker.init(today.get(Calendar.YEAR), today.get(Calendar.MONTH),
+            today.get(Calendar.DAY_OF_MONTH)
+
+        ) { view, year, month, day ->
+            null
+        }
+
+        dialogBuilder.setPositiveButton("OK", DialogInterface.OnClickListener { _, _ ->
+            view.findViewById<TextView>(R.id.date_picker_text).text = datePicker.getDate()
+        })
+
+        dialogBuilder.setNegativeButton("Annuler", DialogInterface.OnClickListener { _, _ ->
+            //pass
+        })
+
+        val b = dialogBuilder.create()
+
+        b.show()
+    }
+
+    fun openTimePicker(view: View){
+        val dialogBuilder = AlertDialog.Builder(this)
+        val inflater = this.layoutInflater
+        val dialogView = inflater.inflate(R.layout.time_picker, null)
+        dialogBuilder.setView(dialogView)
+
+        val timePicker = dialogView.findViewById<TimePicker>(R.id.timePicker1)
+        timePicker.setIs24HourView(true)
+
+        dialogBuilder.setPositiveButton("OK", DialogInterface.OnClickListener { _, _ ->
+            val format = SimpleDateFormat("HH:mm")
+            val formattedTime = format.format(format.parse(timePicker.hour.toString()+":"+timePicker.minute.toString()))
+            view.findViewById<TextView>(R.id.time_picker_text).text = formattedTime
+        })
+
+        dialogBuilder.setNegativeButton("Annuler", DialogInterface.OnClickListener { _, _ ->
+            //pass
+        })
+
+        val b = dialogBuilder.create()
+
+        b.show()
+    }
+
+    fun DatePicker.getDate(): String {
+        val calendar = Calendar.getInstance()
+        calendar.set(year, month, dayOfMonth)
+        val format = SimpleDateFormat("dd MMMM yyyy")
+        return format.format(calendar.time)
+    }
+
     fun modifyTask(view: View, dialog: AlertDialog, taskId: Int) {
         val category = view.findViewById<Spinner>(R.id.dropdown).selectedItemPosition + 1
         //val description = view.findViewById<EditText>(R.id.task_description_input).text.toString().replace("\n", " ")
@@ -225,9 +287,24 @@ class MainActivity : AppCompatActivity() {
         val category = view.findViewById<Spinner>(R.id.dropdown).selectedItemPosition + 1
         //val description = view.findViewById<EditText>(R.id.task_description_input).text.toString().replace("\n", " ")
         val description = view.findViewById<EditText>(R.id.task_description_input).text.toString()
-        val deadline = null
+        var deadline: String? = null
+        val defaultDay = SimpleDateFormat("dd MMMM yyyy").format(Date())
+        val defaultTime = "23:59"
 
-        println(description.lines().take(6).joinToString(separator = "\n"))
+        val datePicked = dialog.findViewById<TextView>(R.id.date_picker_text)
+        val timePicked = dialog.findViewById<TextView>(R.id.time_picker_text)
+
+        if (datePicked!!.text != resources.getString(R.string.default_date_value)) {
+            deadline = datePicked.text.toString() + " " + defaultTime
+        }
+        if (timePicked!!.text != resources.getString(R.string.default_time_value)) {
+            deadline = defaultDay + " " + timePicked.text.toString().trim()
+        }
+        if (datePicked.text != resources.getString(R.string.default_date_value) && timePicked.text != resources.getString(R.string.default_time_value)){
+            deadline = datePicked.text.toString() + " " + timePicked.text.toString().trim()
+        }
+
+        //println(description.lines().take(6).joinToString(separator = "\n"))
         val databaseHandler = DatabaseHandler(this)
 
         if(description.trim()!=""){

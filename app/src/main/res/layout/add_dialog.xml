@@ -94,15 +94,16 @@
                     android:textColor="@color/black" />
 
                 <TextView
+                    android:id="@+id/date_picker_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp"
                     android:background="@color/white"
-                    android:textColor="@color/black"
-                    android:text="@string/default_date_value"
-                    android:padding="7dp"
                     android:clickable="true"
                     android:onClick="openDatePicker"
-                    android:layout_marginEnd="5dp"/>
+                    android:padding="7dp"
+                    android:text="@string/default_date_value"
+                    android:textColor="@color/black" />
 
                 <TextView
                     android:layout_width="30dp"
@@ -114,15 +115,15 @@
                     android:textColor="@color/black" />
 
                 <TextView
-                    android:id="@+id/timePickerButton"
+                    android:id="@+id/time_picker_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@color/white"
-                    android:text="@string/default_time_value"
-                    android:textColor="@color/black"
                     android:clickable="true"
-                    android:onClick="openDatePicker"
-                    android:padding="7dp"/>
+                    android:onClick="openTimePicker"
+                    android:padding="7dp"
+                    android:text="@string/default_time_value"
+                    android:textColor="@color/black" />
 
             </LinearLayout>
 

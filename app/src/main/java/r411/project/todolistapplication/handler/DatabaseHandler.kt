@@ -56,17 +56,9 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
                 "FOREIGN KEY ($TASK_CATEGORY) REFERENCES $TABLE_CATEGORIES ($CATEGORY_ID));"
             )
 
-        val INSERT_TASKS = (
-            "INSERT INTO $TABLE_TASKS ($TASK_CATEGORY, $TASK_DESCRIPTION, $TASK_DEADLINE, $TASK_STATUS) VALUES " +
-                "(2, 'Passer le balais', '11-03-2023 10:00', -1)," +
-                "(1, 'Acheter du pain', '11-05-2023 10:00', 0)," +
-                "(8, 'Prendre RDV Chez le vétérinaire', '11-02-2023 10:00', 1)," +
-                "(6, 'Rappel Vaccin', null, 0);")
-
         db?.execSQL(CREATE_CATEGORY_TABLE)
         db?.execSQL(INSERT_CATEGORIES)
         db?.execSQL(CREATE_TASK_TABLE)
-        db?.execSQL(INSERT_TASKS)
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
