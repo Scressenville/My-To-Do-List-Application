@@ -22,24 +22,39 @@
             android:layout_height="wrap_content"
             android:background="@color/red_post_it"
             android:text="En retard"
-            android:textColor="@color/black" />
+            android:textColor="@color/black"
+            android:tag="-1"
+            android:onClick="showFilteredTasks"/>
 
         <Button
             android:id="@+id/not_finished_filter_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="40dp"
-            android:layout_marginEnd="40dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
             android:background="@color/green_post_it"
             android:text="A réaliser"
-            android:textColor="@color/black" />
+            android:textColor="@color/black"
+            android:tag="0"
+            android:onClick="showFilteredTasks"/>
 
         <Button
             android:id="@+id/done_filter_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@color/blue_post_it"
+            android:layout_marginEnd="20dp"
             android:text="Réalisées"
-            android:textColor="@color/black" />
+            android:textColor="@color/black"
+            android:tag="1"
+            android:onClick="showFilteredTasks"/>
+        <Button
+            android:id="@+id/no_filter_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/yellow_post_it"
+            android:text="Toutes"
+            android:textColor="@color/black"
+            android:onClick="showAllTasks"/>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

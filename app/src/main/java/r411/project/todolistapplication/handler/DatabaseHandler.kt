@@ -8,6 +8,10 @@ import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
 import android.security.identity.AccessControlProfileId
 import r411.project.todolistapplication.classes.TaskModelClass
+import java.text.SimpleDateFormat
+import java.util.*
+import java.util.concurrent.TimeUnit
+import kotlin.collections.ArrayList
 
 class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
     companion object {
@@ -177,21 +181,10 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
         return success
     }
 
-    fun changeStatusLate(taskId: Int): Int {
+    fun changeStatus(taskId: Int, status: Int): Int {
         val db = this.writableDatabase
         val contentValues = ContentValues()
-        contentValues.put(TASK_STATUS, -1)
-
-        val success = db.update(TABLE_TASKS, contentValues, "$TASK_ID=$taskId", null)
-        db.close()
-
-        return success
-    }
-
-    fun changeStatusFinished(taskId: Int): Int {
-        val db = this.writableDatabase
-        val contentValues = ContentValues()
-        contentValues.put(TASK_STATUS, 1)
+        contentValues.put(TASK_STATUS, status)
 
         val success = db.update(TABLE_TASKS, contentValues, "$TASK_ID=$taskId", null)
         db.close()
@@ -221,11 +214,19 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
     }
 
     fun modifyTask(taskId: Int, category: Int, description: String, deadline: String?): Int {
+        val dateFormat = SimpleDateFormat("dd MMMM yyyy HH:mm")
+        val status: Int
+        if (TimeUnit.MINUTES.convert((dateFormat.parse(deadline).time - Date().time), TimeUnit.MILLISECONDS) > 0) {
+            status = 0
+        }
+        else status = -1
+
         val db = this.writableDatabase
         val contentValues = ContentValues()
         contentValues.put(TASK_CATEGORY, category)
         contentValues.put(TASK_DESCRIPTION, description)
         contentValues.put(TASK_DEADLINE, deadline)
+        contentValues.put(TASK_STATUS, status)
 
         val success = db.update(TABLE_TASKS, contentValues, "$TASK_ID=$taskId", null)
         db.close()
@@ -233,14 +234,36 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
         return success
     }
 
-    fun changeStatusNotDone(taskId: Int): Int {
-        val db = this.writableDatabase
-        val contentValues = ContentValues()
-        contentValues.put(TASK_STATUS, 0)
-
-        val success = db.update(TABLE_TASKS, contentValues, "$TASK_ID=$taskId", null)
-        db.close()
-
-        return success
+    fun selectTasksWithStatus(statusFilter: Int): ArrayList<TaskModelClass> {
+        val taskList:ArrayList<TaskModelClass> = ArrayList<TaskModelClass>()
+        val selectQuery = "SELECT $TASK_ID, $CATEGORY_ICON_UNICODE, $TASK_DESCRIPTION, $TASK_DEADLINE, $TASK_STATUS " +
+                "FROM $TABLE_TASKS T INNER JOIN $TABLE_CATEGORIES C ON T.$TASK_CATEGORY = C.$CATEGORY_ID " +
+                "WHERE $TASK_STATUS=$statusFilter ORDER BY $TASK_ID"
+        val db = this.readableDatabase
+        var cursor: Cursor? = null
+        try {
+            cursor = db.rawQuery(selectQuery, null)
+        }
+        catch (e: SQLiteException) {
+            db.execSQL(selectQuery)
+            return ArrayList()
+        }
+        var taskId: Int
+        var taskCategory: Int
+        var taskDescription: String
+        var taskDeadline: String?
+        var taskStatus: Int
+        if (cursor.moveToFirst()) {
+            do {
+                taskId = cursor.getInt(cursor.getColumnIndex(TASK_ID))
+                taskCategory = cursor.getInt(cursor.getColumnIndex(CATEGORY_ICON_UNICODE))
+                taskDescription = cursor.getString(cursor.getColumnIndex(TASK_DESCRIPTION))
+                taskDeadline = cursor.getString(cursor.getColumnIndex(TASK_DEADLINE))
+                taskStatus = cursor.getInt(cursor.getColumnIndex(TASK_STATUS))
+                val task = TaskModelClass(taskId, taskCategory, taskDescription, taskDeadline, taskStatus)
+                taskList.add(task)
+            } while (cursor.moveToNext())
+        }
+        return taskList
     }
 }

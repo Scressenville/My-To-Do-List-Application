@@ -24,12 +24,16 @@ class MainActivity : AppCompatActivity() {
     val fullDateFormat = SimpleDateFormat("dd MMMM yyyy HH:mm")
     val dayFormat = SimpleDateFormat("dd MMMM yyyy")
     val timeFormat = SimpleDateFormat("HH:mm")
+    var taskStatusFilter: Int? = null
 
     private val updateTasks = object : Runnable {
         override fun run() {
             //Method calls and updating task status here
             val adapter: MyGridAdapter = findViewById<GridView>(R.id.content).adapter as MyGridAdapter
             adapter.taskArrayList.sortWith(compareBy{it.taskStatus})
+            if (taskStatusFilter != null) {
+                adapter.taskArrayList.forEach{ it -> if (it.taskStatus != taskStatusFilter) adapter.taskArrayList.remove(it)}
+            }
             adapter.notifyDataSetChanged()
 
             mainHandler.postDelayed(this, 10000)
@@ -49,15 +53,15 @@ class MainActivity : AppCompatActivity() {
 
         val inflater = this.layoutInflater
         val parentLayout = (gridView.parent as LinearLayout)
-        val emptyGridTextview = inflater.inflate(R.layout.empty_grid_textview, null)
+        val topView: View
 
         if (taskList.size != 0) {
-            parentLayout.addView(inflater.inflate(R.layout.filter_buttons, null), 0)
+            topView = inflater.inflate(R.layout.filter_buttons, null)
         }
         else {
-            parentLayout.addView(emptyGridTextview, 0)
-            println(findViewById<TextView>(R.id.empty).parent)
+            topView = inflater.inflate(R.layout.empty_grid_textview, null)
         }
+        parentLayout.addView(topView, 0)
 
         findViewById<FloatingActionButton>(R.id.add_task_btn).setOnClickListener{ showAddTaskDialog(null, null) }
         mainHandler = Handler(Looper.getMainLooper())
@@ -291,9 +295,10 @@ class MainActivity : AppCompatActivity() {
                 val taskIndex = adapter.taskArrayList.indexOfFirst { it.taskId == taskId }
                 val modifiedTask = databaseHandler.selectTaskFromId(taskId)
                 if (modifiedTask != null) {
-                    adapter.taskArrayList.set(taskIndex, modifiedTask)
+                    if (modifiedTask.taskStatus == taskStatusFilter) adapter.taskArrayList.set(taskIndex, modifiedTask)
+                    else adapter.taskArrayList.removeAt(taskIndex)
+                    adapter.notifyDataSetChanged()
                 }
-                adapter.notifyDataSetChanged()
                 dialog.dismiss()
             }
         }else{
@@ -331,14 +336,20 @@ class MainActivity : AppCompatActivity() {
                 val insertedTask = taskList[taskList.size-1]
                 val gridView = findViewById<GridView>(R.id.content)
                 val adapter = gridView.adapter as MyGridAdapter
-                if (adapter.taskArrayList.size == 0) {
+                if (adapter.taskArrayList.size == 0 && taskStatusFilter == null) {
                     val inflater = this.layoutInflater
                     val parentLayout = gridView.parent as LinearLayout
                     parentLayout.removeView(findViewById<TextView>(R.id.empty).parent as View)
                     parentLayout.addView(inflater.inflate(R.layout.filter_buttons, null), 0)
                 }
-                adapter.taskArrayList.add(insertedTask)
-                adapter.notifyDataSetChanged()
+                if (taskStatusFilter != null && insertedTask.taskStatus == taskStatusFilter) {
+                    adapter.taskArrayList.add(insertedTask)
+                    adapter.notifyDataSetChanged()
+                }
+                if (taskStatusFilter == null) {
+                    adapter.taskArrayList.add(insertedTask)
+                    adapter.notifyDataSetChanged()
+                }
                 dialog.dismiss()
             }
         }else{
@@ -381,7 +392,7 @@ class MainActivity : AppCompatActivity() {
     fun finishTask(view: View, dialog: AlertDialog){
         val databaseHandler = DatabaseHandler(this)
         val updatedTask = databaseHandler.selectTaskFromId(view.id)
-        val result = databaseHandler.changeStatusFinished(view.id)
+        val result = databaseHandler.changeStatus(view.id, 1)
         if (result > -1) {
             Toast.makeText(applicationContext,getString(R.string.task_finished_confirmation),Toast.LENGTH_LONG).show()
             val adapter: MyGridAdapter = findViewById<GridView>(R.id.content).adapter as MyGridAdapter
@@ -389,5 +400,21 @@ class MainActivity : AppCompatActivity() {
             adapter.notifyDataSetChanged()
             dialog.dismiss()
         }
+    }
+
+    fun showAllTasks(view: View) {
+        taskStatusFilter = null
+        val databaseHandler = DatabaseHandler(this)
+        val tasks = databaseHandler.selectAllTasks()
+        tasks.sortWith(compareBy { it.taskStatus })
+        findViewById<GridView>(R.id.content).adapter = MyGridAdapter(this, tasks)
+    }
+
+    fun showFilteredTasks(view: View) {
+        val statusFilter = (view.tag as String).toInt()
+        taskStatusFilter = statusFilter
+        val databaseHandler = DatabaseHandler(this)
+        val filteredTasks = databaseHandler.selectTasksWithStatus(statusFilter)
+        findViewById<GridView>(R.id.content).adapter = MyGridAdapter(this, filteredTasks)
     }
 }

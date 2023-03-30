@@ -37,12 +37,12 @@ class MyGridAdapter(context: Context, var taskArrayList: ArrayList<TaskModelClas
             if (task.taskStatus != -1 && minutesDifference < 0) {
                 task.taskStatus = -1
                 val db = DatabaseHandler(this.context)
-                db.changeStatusLate(task.taskId)
+                db.changeStatus(task.taskId, -1)
             }
             if (task.taskStatus == -1 && minutesDifference >= 0){
                 task.taskStatus = 0
                 val db = DatabaseHandler(this.context)
-                db.changeStatusNotDone(task.taskId)
+                db.changeStatus(task.taskId, 0)
             }
 
             if (task.taskStatus == -1) {
