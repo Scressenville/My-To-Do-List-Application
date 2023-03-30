@@ -29,6 +29,8 @@
             android:background="@color/yellow_post_it"
             android:textColor="@color/black"
             android:gravity="center"
-            android:padding="5dp"/>
+            android:padding="5dp"
+            android:ellipsize="end"
+            android:maxLines="6"/>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

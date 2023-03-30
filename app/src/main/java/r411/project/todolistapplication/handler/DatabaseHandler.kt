@@ -232,4 +232,15 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
 
         return success
     }
+
+    fun changeStatusNotDone(taskId: Int): Int {
+        val db = this.writableDatabase
+        val contentValues = ContentValues()
+        contentValues.put(TASK_STATUS, 0)
+
+        val success = db.update(TABLE_TASKS, contentValues, "$TASK_ID=$taskId", null)
+        db.close()
+
+        return success
+    }
 }

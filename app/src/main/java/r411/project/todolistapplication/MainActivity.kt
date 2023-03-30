@@ -1,6 +1,5 @@
 package r411.project.todolistapplication
 
-import android.app.DatePickerDialog
 import android.content.DialogInterface
 import android.content.res.ColorStateList
 import android.graphics.drawable.ColorDrawable
@@ -13,22 +12,24 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import org.w3c.dom.Text
 import r411.project.todolistapplication.adapter.MyGridAdapter
 import r411.project.todolistapplication.classes.TaskModelClass
 import r411.project.todolistapplication.handler.DatabaseHandler
 import java.text.SimpleDateFormat
 import java.util.*
 
-
 class MainActivity : AppCompatActivity() {
 
     lateinit var mainHandler: Handler
+    val fullDateFormat = SimpleDateFormat("dd MMMM yyyy HH:mm")
+    val dayFormat = SimpleDateFormat("dd MMMM yyyy")
+    val timeFormat = SimpleDateFormat("HH:mm")
 
     private val updateTasks = object : Runnable {
         override fun run() {
             //Method calls and updating task status here
             val adapter: MyGridAdapter = findViewById<GridView>(R.id.content).adapter as MyGridAdapter
+            adapter.taskArrayList.sortWith(compareBy{it.taskStatus})
             adapter.notifyDataSetChanged()
 
             mainHandler.postDelayed(this, 10000)
@@ -43,13 +44,23 @@ class MainActivity : AppCompatActivity() {
         val taskList: ArrayList<TaskModelClass> = dbhandler.selectAllTasks()
         taskList.sortWith(compareBy { it.taskStatus })
         val adapter = MyGridAdapter(this, taskList)
-        findViewById<GridView>(R.id.content).adapter = adapter
+        val gridView = findViewById<GridView>(R.id.content)
+        gridView.adapter = adapter
 
-        findViewById<FloatingActionButton>(R.id.add_task_btn).setOnClickListener{
-            showAddTaskDialog(null, null)
+        val inflater = this.layoutInflater
+        val parentLayout = (gridView.parent as LinearLayout)
+        val emptyGridTextview = inflater.inflate(R.layout.empty_grid_textview, null)
+
+        if (taskList.size != 0) {
+            parentLayout.addView(inflater.inflate(R.layout.filter_buttons, null), 0)
         }
+        else {
+            parentLayout.addView(emptyGridTextview, 0)
+            println(findViewById<TextView>(R.id.empty).parent)
+        }
+
+        findViewById<FloatingActionButton>(R.id.add_task_btn).setOnClickListener{ showAddTaskDialog(null, null) }
         mainHandler = Handler(Looper.getMainLooper())
-        Locale.setDefault(Locale.FRANCE)
     }
 
     override fun onPause() {
@@ -88,16 +99,14 @@ class MainActivity : AppCompatActivity() {
         desc.movementMethod = ScrollingMovementMethod.getInstance();
         desc.text= task.taskDescription
 
-        dialogView.findViewById<ImageView>(R.id.detail_close_button).setOnClickListener{
-            b.dismiss()
-        }
+        dialogView.findViewById<ImageView>(R.id.detail_close_button).setOnClickListener{ b.dismiss() }
 
-        dialogView.findViewById<Button>(R.id.delete_task).setOnClickListener{
-            deleteTask(view, b)
-        }
+        dialogView.findViewById<Button>(R.id.delete_task).setOnClickListener{ deleteTask(view, b) }
 
         dialogView.findViewById<Button>(R.id.reprogram_task).setOnClickListener{
-            Toast.makeText(applicationContext, "TODO", Toast.LENGTH_SHORT).show()
+            task.taskId = -1
+            showAddTaskDialog(null, task)
+            b.dismiss()
         }
 
         b.show()
@@ -138,21 +147,15 @@ class MainActivity : AppCompatActivity() {
         desc.movementMethod = ScrollingMovementMethod.getInstance();
         desc.text= task.taskDescription
 
-        dialogView.findViewById<FloatingActionButton>(R.id.detail_close_button).setOnClickListener{
-            b.dismiss()
-        }
+        dialogView.findViewById<FloatingActionButton>(R.id.detail_close_button).setOnClickListener{ b.dismiss() }
+
+        dialogView.findViewById<Button>(R.id.delete_task).setOnClickListener{ deleteTask(view, b) }
+
+        dialogView.findViewById<Button>(R.id.finish_task).setOnClickListener{ finishTask(view, b) }
 
         dialogView.findViewById<FloatingActionButton>(R.id.detail_modify_button).setOnClickListener{
             showAddTaskDialog(null, task)
             b.dismiss()
-        }
-
-        dialogView.findViewById<Button>(R.id.delete_task).setOnClickListener{
-            deleteTask(view, b)
-        }
-
-        dialogView.findViewById<Button>(R.id.finish_task).setOnClickListener{
-            finishTask(view, b)
         }
 
         b.show()
@@ -183,15 +186,21 @@ class MainActivity : AppCompatActivity() {
             insertTask(dialogView, b)
         }
 
-        if(task!=null) {
+        if(task != null && task.taskId != -1) {
             dropdown.setSelection(dbhandler.getCategoryIdByEmoji(task.taskCategory)-1)
             dialogView.findViewById<EditText>(R.id.task_description_input).setText(task.taskDescription)
-            dialogView.findViewById<TextView>(R.id.date_picker_text).text = SimpleDateFormat("dd MMMM yyyy").format(SimpleDateFormat("dd MMMM yyyy HH:mm").parse(task.taskDeadLine).time)
-            dialogView.findViewById<TextView>(R.id.time_picker_text).text = SimpleDateFormat("HH:mm").format(SimpleDateFormat("dd MMMM yyyy HH:mm").parse(task.taskDeadLine).time)
-            btn.setText("Modifier")
+            if (task.taskDeadLine != null) {
+                dialogView.findViewById<TextView>(R.id.date_picker_text).text = dayFormat.format(fullDateFormat.parse(task.taskDeadLine).time)
+                dialogView.findViewById<TextView>(R.id.time_picker_text).text = timeFormat.format(fullDateFormat.parse(task.taskDeadLine).time)
+            }
+            btn.text = getString(R.string.btn_modify_task)
             btn.setOnClickListener{
                 modifyTask(dialogView, b, task.taskId)
             }
+        }
+        if (task != null && task.taskId == -1) {
+            dropdown.setSelection(dbhandler.getCategoryIdByEmoji(task.taskCategory)-1)
+            dialogView.findViewById<EditText>(R.id.task_description_input).setText(task.taskDescription)
         }
 
         b.show()
@@ -213,13 +222,11 @@ class MainActivity : AppCompatActivity() {
             null
         }
 
-        dialogBuilder.setPositiveButton("OK", DialogInterface.OnClickListener { _, _ ->
+        dialogBuilder.setPositiveButton(getString(R.string.picker_confirm)) { _, _ ->
             view.findViewById<TextView>(R.id.date_picker_text).text = datePicker.getDate()
-        })
+        }
 
-        dialogBuilder.setNegativeButton("Annuler", DialogInterface.OnClickListener { _, _ ->
-            //pass
-        })
+        dialogBuilder.setNegativeButton(getString(R.string.cancel_btn)) { _, _ -> /*pass*/ }
 
         val b = dialogBuilder.create()
 
@@ -235,15 +242,13 @@ class MainActivity : AppCompatActivity() {
         val timePicker = dialogView.findViewById<TimePicker>(R.id.timePicker1)
         timePicker.setIs24HourView(true)
 
-        dialogBuilder.setPositiveButton("OK", DialogInterface.OnClickListener { _, _ ->
-            val format = SimpleDateFormat("HH:mm")
-            val formattedTime = format.format(format.parse(timePicker.hour.toString()+":"+timePicker.minute.toString()))
+        dialogBuilder.setPositiveButton(getString(R.string.picker_confirm)) { _, _ ->
+            val formattedTime =
+                timeFormat.format(timeFormat.parse(timePicker.hour.toString() + ":" + timePicker.minute.toString()))
             view.findViewById<TextView>(R.id.time_picker_text).text = formattedTime
-        })
+        }
 
-        dialogBuilder.setNegativeButton("Annuler", DialogInterface.OnClickListener { _, _ ->
-            //pass
-        })
+        dialogBuilder.setNegativeButton(getString(R.string.cancel_btn)) {_, _ -> /*pass*/ }
 
         val b = dialogBuilder.create()
 
@@ -253,38 +258,35 @@ class MainActivity : AppCompatActivity() {
     fun DatePicker.getDate(): String {
         val calendar = Calendar.getInstance()
         calendar.set(year, month, dayOfMonth)
-        val format = SimpleDateFormat("dd MMMM yyyy")
-        return format.format(calendar.time)
+        return dayFormat.format(calendar.time)
     }
 
     fun modifyTask(view: View, dialog: AlertDialog, taskId: Int) {
         val category = view.findViewById<Spinner>(R.id.dropdown).selectedItemPosition + 1
-        //val description = view.findViewById<EditText>(R.id.task_description_input).text.toString().replace("\n", " ")
         val description = view.findViewById<EditText>(R.id.task_description_input).text.toString()
         var deadline: String? = null
-        val defaultDay = SimpleDateFormat("dd MMMM yyyy").format(Date())
-        val defaultTime = "23:59"
+        val defaultDay = dayFormat.format(Date())
+        val defaultTime = getString(R.string.picker_default_time)
 
         val datePicked = dialog.findViewById<TextView>(R.id.date_picker_text)
         val timePicked = dialog.findViewById<TextView>(R.id.time_picker_text)
 
-        if (datePicked!!.text != resources.getString(R.string.default_date_value)) {
+        if (datePicked!!.text != getString(R.string.default_date_value)) {
             deadline = datePicked.text.toString() + " " + defaultTime
         }
-        if (timePicked!!.text != resources.getString(R.string.default_time_value)) {
+        if (timePicked!!.text != getString(R.string.default_time_value)) {
             deadline = defaultDay + " " + timePicked.text.toString().trim()
         }
-        if (datePicked.text != resources.getString(R.string.default_date_value) && timePicked.text != resources.getString(R.string.default_time_value)){
+        if (datePicked.text != getString(R.string.default_date_value) && timePicked.text != getString(R.string.default_time_value)){
             deadline = datePicked.text.toString() + " " + timePicked.text.toString().trim()
         }
 
-        //println(description.lines().take(6).joinToString(separator = "\n"))
         val databaseHandler = DatabaseHandler(this)
 
         if(description.trim()!=""){
             val status = databaseHandler.modifyTask(taskId, category, description, deadline)
             if(status > -1){
-                Toast.makeText(applicationContext,"Tâche modifiée !",Toast.LENGTH_LONG).show()
+                Toast.makeText(applicationContext,getString(R.string.task_modified_confirmation),Toast.LENGTH_LONG).show()
                 val adapter = findViewById<GridView>(R.id.content).adapter as MyGridAdapter
                 val taskIndex = adapter.taskArrayList.indexOfFirst { it.taskId == taskId }
                 val modifiedTask = databaseHandler.selectTaskFromId(taskId)
@@ -295,74 +297,83 @@ class MainActivity : AppCompatActivity() {
                 dialog.dismiss()
             }
         }else{
-            Toast.makeText(applicationContext,"La description de la tâche ne peut pas être vide.",Toast.LENGTH_LONG).show()
+            Toast.makeText(applicationContext,getString(R.string.description_cannot_be_empty),Toast.LENGTH_LONG).show()
         }
     }
 
     fun insertTask(view: View, dialog: AlertDialog){
         val category = view.findViewById<Spinner>(R.id.dropdown).selectedItemPosition + 1
-        //val description = view.findViewById<EditText>(R.id.task_description_input).text.toString().replace("\n", " ")
         val description = view.findViewById<EditText>(R.id.task_description_input).text.toString()
         var deadline: String? = null
-        val defaultDay = SimpleDateFormat("dd MMMM yyyy").format(Date())
-        val defaultTime = "23:59"
+        val defaultDay = dayFormat.format(Date())
+        val defaultTime = getString(R.string.picker_default_time)
 
         val datePicked = dialog.findViewById<TextView>(R.id.date_picker_text)
         val timePicked = dialog.findViewById<TextView>(R.id.time_picker_text)
 
-        if (datePicked!!.text != resources.getString(R.string.default_date_value)) {
+        if (datePicked!!.text != getString(R.string.default_date_value)) {
             deadline = datePicked.text.toString() + " " + defaultTime
         }
-        if (timePicked!!.text != resources.getString(R.string.default_time_value)) {
+        if (timePicked!!.text != getString(R.string.default_time_value)) {
             deadline = defaultDay + " " + timePicked.text.toString().trim()
         }
-        if (datePicked.text != resources.getString(R.string.default_date_value) && timePicked.text != resources.getString(R.string.default_time_value)){
+        if (datePicked.text != getString(R.string.default_date_value) && timePicked.text != getString(R.string.default_time_value)){
             deadline = datePicked.text.toString() + " " + timePicked.text.toString().trim()
         }
 
-        //println(description.lines().take(6).joinToString(separator = "\n"))
         val databaseHandler = DatabaseHandler(this)
 
         if(description.trim()!=""){
             val status = databaseHandler.addTask(category, description, deadline)
             if(status > -1){
-                Toast.makeText(applicationContext,"Tâche ajoutée !",Toast.LENGTH_LONG).show()
+                Toast.makeText(applicationContext,getString(R.string.add_task_confirmation),Toast.LENGTH_LONG).show()
                 val taskList: ArrayList<TaskModelClass> = databaseHandler.selectAllTasks()
                 val insertedTask = taskList[taskList.size-1]
-                val adapter = findViewById<GridView>(R.id.content).adapter as MyGridAdapter
+                val gridView = findViewById<GridView>(R.id.content)
+                val adapter = gridView.adapter as MyGridAdapter
+                if (adapter.taskArrayList.size == 0) {
+                    val inflater = this.layoutInflater
+                    val parentLayout = gridView.parent as LinearLayout
+                    parentLayout.removeView(findViewById<TextView>(R.id.empty).parent as View)
+                    parentLayout.addView(inflater.inflate(R.layout.filter_buttons, null), 0)
+                }
                 adapter.taskArrayList.add(insertedTask)
                 adapter.notifyDataSetChanged()
                 dialog.dismiss()
             }
         }else{
-            Toast.makeText(applicationContext,"La description de la tâche ne peut pas être vide.",Toast.LENGTH_LONG).show()
+            Toast.makeText(applicationContext,getString(R.string.description_cannot_be_empty),Toast.LENGTH_LONG).show()
         }
     }
 
     fun deleteTask(view: View, dialog: AlertDialog){
         val dialogBuilder = AlertDialog.Builder(this)
 
-        dialogBuilder.setTitle("Suppression de tâche")
-        dialogBuilder.setMessage("Êtes vous sûr(e) de vouloir supprimer cette tâche ?")
-        dialogBuilder.setPositiveButton("Confirmer", DialogInterface.OnClickListener { _, _ ->
-
+        dialogBuilder.setTitle(getString(R.string.delete_dialog_title))
+        dialogBuilder.setMessage(getString(R.string.delete_dialog_message))
+        dialogBuilder.setPositiveButton(getString(R.string.confirm_btn)) { _, _ ->
             val deleteId = view.id
             val databaseHandler = DatabaseHandler(this)
             val deletedTask = databaseHandler.selectTaskFromId(deleteId)
 
             val status = databaseHandler.deleteTask(deleteId)
             if(status > -1){
-                Toast.makeText(applicationContext,"Tâche supprimée",Toast.LENGTH_LONG).show()
-                val adapter: MyGridAdapter = findViewById<GridView>(R.id.content).adapter as MyGridAdapter
+                Toast.makeText(applicationContext,getString(R.string.task_delete_confirmation),Toast.LENGTH_LONG).show()
+                val gridView = findViewById<GridView>(R.id.content)
+                val adapter: MyGridAdapter = gridView.adapter as MyGridAdapter
                 adapter.taskArrayList.remove(deletedTask)
+                if (adapter.taskArrayList.size == 0) {
+                    val inflater = this.layoutInflater
+                    val parentLayout = gridView.parent as LinearLayout
+                    parentLayout.removeView(findViewById<LinearLayout>(R.id.filters).parent as View)
+                    parentLayout.addView(inflater.inflate(R.layout.empty_grid_textview, null), 0)
+                }
                 adapter.notifyDataSetChanged()
                 dialog.dismiss()
             }
+        }
+        dialogBuilder.setNegativeButton(getString(R.string.cancel_btn)) { _, _ -> /*pass*/ }
 
-        })
-        dialogBuilder.setNegativeButton("Annuler", DialogInterface.OnClickListener { _, _ ->
-            //pass
-        })
         val b = dialogBuilder.create()
         b.show()
     }
@@ -372,7 +383,7 @@ class MainActivity : AppCompatActivity() {
         val updatedTask = databaseHandler.selectTaskFromId(view.id)
         val result = databaseHandler.changeStatusFinished(view.id)
         if (result > -1) {
-            Toast.makeText(applicationContext,"Tâche réalisée !",Toast.LENGTH_LONG).show()
+            Toast.makeText(applicationContext,getString(R.string.task_finished_confirmation),Toast.LENGTH_LONG).show()
             val adapter: MyGridAdapter = findViewById<GridView>(R.id.content).adapter as MyGridAdapter
             adapter.taskArrayList[adapter.taskArrayList.indexOf(updatedTask)].taskStatus = 1
             adapter.notifyDataSetChanged()

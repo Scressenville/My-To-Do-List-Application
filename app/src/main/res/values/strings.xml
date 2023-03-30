@@ -1,9 +1,8 @@
 <resources>
     <string name="app_name">My To-Do List</string>
-    <string name="task_add_confirm">Ajouter la tâche</string>
     <string name="task_description_input">Description de la tâche :</string>
     <string name="task_deadline_date_picker">À réaliser avant le : </string>
-    <string name="default_date_value">--/---/----</string>
+    <string name="default_date_value">-- | ---- | ----</string>
     <string name="confirm_add_task">Ajouter la tâche</string>
     <string name="default_time_value">--:--</string>
     <string name="task_deadline_time_picker">à : </string>
@@ -16,4 +15,16 @@
     <string name="add_category">Catégorie :</string>
     <string name="description_input_hint">Description de la tâche…</string>
     <string name="details_btn_reprogram">Reprogrammer</string>
+    <string name="btn_modify_task">Modifier</string>
+    <string name="picker_confirm">OK</string>
+    <string name="cancel_btn">Annuler</string>
+    <string name="picker_default_time">23:59</string>
+    <string name="task_modified_confirmation">Tâche modifiée !</string>
+    <string name="description_cannot_be_empty">La description de la tâche ne peut pas être vide.</string>
+    <string name="add_task_confirmation">Tâche ajoutée !</string>
+    <string name="delete_dialog_title">Suppression de tâche</string>
+    <string name="delete_dialog_message">Êtes vous sûr(e) de vouloir supprimer cette tâche ?</string>
+    <string name="confirm_btn">Confirmer</string>
+    <string name="task_delete_confirmation">Tâche supprimée</string>
+    <string name="task_finished_confirmation">Tâche réalisée !</string>
 </resources>

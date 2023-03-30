@@ -67,13 +67,20 @@
                 android:padding="5dp"
                 android:background="@color/green_post_it_dark"
                 android:textColor="@color/black"
-                android:maxLines="5"
-                android:maxLength="90"
                 android:inputType="textCapSentences|textMultiLine"
                 android:singleLine="true"
                 android:hint="@string/description_input_hint"
                 android:autofillHints="username"
                 android:textColorHint="#739E57"/>
+
+            <TextView
+                android:id="@+id/textView5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/the_delicate"
+                android:text="@string/task_deadline_date_picker"
+                android:textAlignment="center"
+                android:textColor="@color/black" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -82,16 +89,7 @@
                 android:paddingStart="5dp"
                 android:layout_marginTop="5dp"
                 android:orientation="horizontal"
-                android:gravity="center">
-
-                <TextView
-                    android:id="@+id/textView5"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/the_delicate"
-                    android:text="@string/task_deadline_date_picker"
-                    android:textAlignment="center"
-                    android:textColor="@color/black" />
+                android:gravity="center" >
 
                 <TextView
                     android:id="@+id/date_picker_text"
@@ -100,18 +98,20 @@
                     android:background="@color/white"
                     android:clickable="true"
                     android:onClick="openDatePicker"
+                    android:layout_marginEnd="5dp"
                     android:textAlignment="center"
                     android:padding="7dp"
                     android:text="@string/default_date_value"
                     android:textColor="@color/black" />
 
                 <TextView
-                    android:layout_width="30dp"
+                    android:layout_width="20dp"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/the_delicate"
                     android:gravity="center"
+                    android:layout_marginEnd="5dp"
                     android:text="@string/task_deadline_time_picker"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/black"/>
 
                 <TextView
                     android:id="@+id/time_picker_text"

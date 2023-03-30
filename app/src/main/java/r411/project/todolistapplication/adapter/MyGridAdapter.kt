@@ -36,8 +36,13 @@ class MyGridAdapter(context: Context, var taskArrayList: ArrayList<TaskModelClas
             val minutesDifference = TimeUnit.MINUTES.convert((dateFormat.parse(task.taskDeadLine).time - Date().time), TimeUnit.MILLISECONDS)
             if (task.taskStatus != -1 && minutesDifference < 0) {
                 task.taskStatus = -1
-                val test = DatabaseHandler(this.context)
-                test.changeStatusLate(task.taskId)
+                val db = DatabaseHandler(this.context)
+                db.changeStatusLate(task.taskId)
+            }
+            if (task.taskStatus == -1 && minutesDifference >= 0){
+                task.taskStatus = 0
+                val db = DatabaseHandler(this.context)
+                db.changeStatusNotDone(task.taskId)
             }
 
             if (task.taskStatus == -1) {
