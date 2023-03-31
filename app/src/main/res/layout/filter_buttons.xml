@@ -1,8 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/empty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Filtrer par :"
+        android:textColor="@color/background_shade"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/filters"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        tools:layout_editor_absoluteX="-16dp" />
 
     <LinearLayout
         android:id="@+id/filters"
@@ -18,43 +33,60 @@
 
         <Button
             android:id="@+id/late_filter_btn"
-            android:layout_width="wrap_content"
+            android:padding="2dp"
+            android:layout_width="85dp"
             android:layout_height="wrap_content"
             android:background="@color/red_post_it"
-            android:text="En retard"
+            android:text="@string/late_filter_btn"
+            android:textSize="14sp"
+            android:textAllCaps="false"
             android:textColor="@color/black"
             android:tag="-1"
-            android:onClick="showFilteredTasks"/>
+            android:onClick="showFilteredTasks"
+            style="?android:attr/buttonBarButtonStyle" />
 
         <Button
             android:id="@+id/not_finished_filter_btn"
-            android:layout_width="wrap_content"
+            android:padding="2dp"
+            android:layout_width="85dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
             android:background="@color/green_post_it"
-            android:text="A réaliser"
+            android:text="@string/to_do_filter_btn"
+            android:textSize="14sp"
+            android:textAllCaps="false"
             android:textColor="@color/black"
             android:tag="0"
-            android:onClick="showFilteredTasks"/>
+            android:onClick="showFilteredTasks"
+            style="?android:attr/buttonBarButtonStyle" />
 
         <Button
             android:id="@+id/done_filter_btn"
-            android:layout_width="wrap_content"
+            android:padding="2dp"
+            android:layout_width="85dp"
             android:layout_height="wrap_content"
             android:background="@color/blue_post_it"
-            android:layout_marginEnd="20dp"
-            android:text="Réalisées"
+            android:layout_marginEnd="5dp"
+            android:text="@string/done_filter_btn"
+            android:textSize="14sp"
+            android:textAllCaps="false"
             android:textColor="@color/black"
             android:tag="1"
-            android:onClick="showFilteredTasks"/>
+            android:onClick="showFilteredTasks"
+            style="?android:attr/buttonBarButtonStyle" />
+
         <Button
             android:id="@+id/no_filter_btn"
-            android:layout_width="wrap_content"
+            android:padding="2dp"
+            android:layout_width="85dp"
             android:layout_height="wrap_content"
             android:background="@color/yellow_post_it"
-            android:text="Toutes"
+            android:text="@string/remove_filter_btn"
+            android:textSize="14sp"
+            android:textAllCaps="false"
             android:textColor="@color/black"
-            android:onClick="showAllTasks"/>
+            android:onClick="showAllTasks"
+            style="?android:attr/buttonBarButtonStyle" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

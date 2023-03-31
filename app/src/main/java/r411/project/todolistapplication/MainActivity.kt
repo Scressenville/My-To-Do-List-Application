@@ -1,8 +1,10 @@
 package r411.project.todolistapplication
 
-import android.content.DialogInterface
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.res.ColorStateList
 import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -11,12 +13,15 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import r411.project.todolistapplication.adapter.MyGridAdapter
 import r411.project.todolistapplication.classes.TaskModelClass
 import r411.project.todolistapplication.handler.DatabaseHandler
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
 
@@ -37,6 +42,28 @@ class MainActivity : AppCompatActivity() {
             adapter.notifyDataSetChanged()
 
             mainHandler.postDelayed(this, 10000)
+        }
+    }
+
+    private val notifyLateTasks = object : Runnable {
+        override fun run() {
+            val dbHandler = DatabaseHandler(applicationContext)
+            val taskList = dbHandler.selectAllTasks()
+            var lateTasksSize = 0
+            taskList.forEach{ task ->
+                if (task.taskDeadLine != null && task.taskStatus != 1) {
+                    val dateFormat = SimpleDateFormat("dd MMMM yyyy HH:mm")
+                    val minutesDifference = TimeUnit.MINUTES.convert((dateFormat.parse(task.taskDeadLine).time - Date().time), TimeUnit.MILLISECONDS)
+                    if (task.taskStatus != -1 && minutesDifference < 0) {
+                        task.taskStatus = -1
+                        dbHandler.changeStatus(task.taskId, -1)
+                        lateTasksSize++
+                    }
+                }
+            }
+            if (lateTasksSize != 0) sendNotification(lateTasksSize)
+
+            mainHandler.postDelayed(this, 60000)
         }
     }
 
@@ -65,11 +92,22 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<FloatingActionButton>(R.id.add_task_btn).setOnClickListener{ showAddTaskDialog(null, null) }
         mainHandler = Handler(Looper.getMainLooper())
+
+        createNotificationChannel()
+    }
+
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel("NotificationChannelId", "NotificationChannel", NotificationManager.IMPORTANCE_DEFAULT)
+            val manager = getSystemService(NotificationManager::class.java)
+            manager.createNotificationChannel(channel)
+        }
     }
 
     override fun onPause() {
         super.onPause()
         mainHandler.removeCallbacks(updateTasks)
+        mainHandler.post(notifyLateTasks)
     }
 
     override fun onResume() {
@@ -295,7 +333,7 @@ class MainActivity : AppCompatActivity() {
                 val taskIndex = adapter.taskArrayList.indexOfFirst { it.taskId == taskId }
                 val modifiedTask = databaseHandler.selectTaskFromId(taskId)
                 if (modifiedTask != null) {
-                    if (modifiedTask.taskStatus == taskStatusFilter) adapter.taskArrayList.set(taskIndex, modifiedTask)
+                    if (modifiedTask.taskStatus == taskStatusFilter || taskStatusFilter == null) adapter.taskArrayList.set(taskIndex, modifiedTask)
                     else adapter.taskArrayList.removeAt(taskIndex)
                     adapter.notifyDataSetChanged()
                 }
@@ -342,11 +380,7 @@ class MainActivity : AppCompatActivity() {
                     parentLayout.removeView(findViewById<TextView>(R.id.empty).parent as View)
                     parentLayout.addView(inflater.inflate(R.layout.filter_buttons, null), 0)
                 }
-                if (taskStatusFilter != null && insertedTask.taskStatus == taskStatusFilter) {
-                    adapter.taskArrayList.add(insertedTask)
-                    adapter.notifyDataSetChanged()
-                }
-                if (taskStatusFilter == null) {
+                if (taskStatusFilter != null && insertedTask.taskStatus == taskStatusFilter || taskStatusFilter == null) {
                     adapter.taskArrayList.add(insertedTask)
                     adapter.notifyDataSetChanged()
                 }
@@ -416,5 +450,17 @@ class MainActivity : AppCompatActivity() {
         val databaseHandler = DatabaseHandler(this)
         val filteredTasks = databaseHandler.selectTasksWithStatus(statusFilter)
         findViewById<GridView>(R.id.content).adapter = MyGridAdapter(this, filteredTasks)
+    }
+
+    private fun sendNotification(lateTasks: Int) {
+        val builder = NotificationCompat.Builder(this, "NotificationChannelId")
+        builder.setContentTitle("Retard !")
+        if (lateTasks == 1) builder.setContentTitle("Vous venez de prendre du retard sur 1 tâche !")
+        else builder.setContentTitle("Vous venez de prendre du retard sur $lateTasks tâches !")
+        builder.setSmallIcon(R.drawable.icon)
+        builder.setAutoCancel(true)
+
+        val managerCompat = NotificationManagerCompat.from(this)
+        managerCompat.notify(1, builder.build())
     }
 }

@@ -27,4 +27,9 @@
     <string name="confirm_btn">Confirmer</string>
     <string name="task_delete_confirmation">Tâche supprimée</string>
     <string name="task_finished_confirmation">Tâche réalisée !</string>
+    <string name="empty_grid_text">Aucune tâche à réaliser</string>
+    <string name="late_filter_btn">En retard</string>
+    <string name="to_do_filter_btn">A réaliser</string>
+    <string name="done_filter_btn">Réalisées</string>
+    <string name="remove_filter_btn">Toutes</string>
 </resources>

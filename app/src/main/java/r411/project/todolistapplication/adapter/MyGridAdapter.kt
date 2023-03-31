@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import r411.project.todolistapplication.R
 import r411.project.todolistapplication.classes.TaskModelClass
 import r411.project.todolistapplication.handler.DatabaseHandler
@@ -34,7 +36,7 @@ class MyGridAdapter(context: Context, var taskArrayList: ArrayList<TaskModelClas
         if (task.taskDeadLine != null && task.taskStatus != 1) {
             val dateFormat = SimpleDateFormat("dd MMMM yyyy HH:mm")
             val minutesDifference = TimeUnit.MINUTES.convert((dateFormat.parse(task.taskDeadLine).time - Date().time), TimeUnit.MILLISECONDS)
-            if (task.taskStatus != -1 && minutesDifference < 0) {
+            if (minutesDifference < 0) {
                 task.taskStatus = -1
                 val db = DatabaseHandler(this.context)
                 db.changeStatus(task.taskId, -1)

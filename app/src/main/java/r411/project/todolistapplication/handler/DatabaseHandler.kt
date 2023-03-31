@@ -72,12 +72,20 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
     }
 
     fun addTask(taskCategory: Int, taskDescription: String, taskDeadline: String?): Long{
+        val dateFormat = SimpleDateFormat("dd MMMM yyyy HH:mm")
+        var status = 0
+        if (taskDeadline != null) {
+            if (TimeUnit.MINUTES.convert((dateFormat.parse(taskDeadline).time - Date().time), TimeUnit.MILLISECONDS) < 0) {
+                status = -1
+            }
+        }
+
         val db = this.writableDatabase
         val contentValues = ContentValues()
         contentValues.put(TASK_CATEGORY, taskCategory)
         contentValues.put(TASK_DESCRIPTION, taskDescription)
         contentValues.put(TASK_DEADLINE, taskDeadline)
-        contentValues.put(TASK_STATUS, 0)
+        contentValues.put(TASK_STATUS, status)
 
         val success = db.insert(TABLE_TASKS, null, contentValues)
 

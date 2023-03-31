@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="Aucune tâche à réaliser"
+        android:text="@string/empty_grid_text"
         android:textColor="@color/background_shade"
         android:textSize="20sp"
         android:textStyle="bold"
