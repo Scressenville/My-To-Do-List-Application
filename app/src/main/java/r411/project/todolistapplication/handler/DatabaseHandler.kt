@@ -226,10 +226,10 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
 
     fun modifyTask(taskId: Int, category: Int, description: String, deadline: String?): Int {
         val dateFormat = SimpleDateFormat("dd MMMM yyyy HH:mm", Locale.getDefault())
-        val status: Int =
-            if (TimeUnit.MINUTES.convert((dateFormat.parse(deadline!!)!!.time - Date().time), TimeUnit.MILLISECONDS) > 0) {
-                0
-            } else -1
+        var status = 0
+        if (deadline != null) {
+            if (TimeUnit.MINUTES.convert((dateFormat.parse(deadline).time - Date().time), TimeUnit.MILLISECONDS) < 0) status = -1
+        }
 
         val db = this.writableDatabase
         val contentValues = ContentValues()

@@ -33,4 +33,5 @@
     <string name="done_filter_btn">Réalisées</string>
     <string name="remove_filter_btn">Toutes</string>
     <string name="filter_textview">Filtrer par :</string>
+    <string name="reset_picker_btn">Réinitialiser</string>
 </resources>

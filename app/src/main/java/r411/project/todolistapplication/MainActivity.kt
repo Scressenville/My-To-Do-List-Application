@@ -278,6 +278,10 @@ class MainActivity : AppCompatActivity() {
 
         dialogBuilder.setNegativeButton(getString(R.string.cancel_btn)) { _, _ -> /*pass*/ }
 
+        dialogBuilder.setNeutralButton(getString(R.string.reset_picker_btn)) {_, _ ->
+            view.findViewById<TextView>(R.id.date_picker_text).text = getString(R.string.default_date_value)
+        }
+
         val b = dialogBuilder.create()
 
         b.show()
@@ -299,6 +303,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         dialogBuilder.setNegativeButton(getString(R.string.cancel_btn)) {_, _ -> /*pass*/ }
+
+        dialogBuilder.setNeutralButton(getString(R.string.reset_picker_btn)) { _, _ ->
+            view.findViewById<TextView>(R.id.time_picker_text).text = getString(R.string.default_time_value)
+        }
 
         val b = dialogBuilder.create()
 
