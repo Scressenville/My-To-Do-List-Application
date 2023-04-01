@@ -101,7 +101,6 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
         val cursor: Cursor?
         try {
             cursor = db.rawQuery(selectQuery, null)
-            cursor.close()
         }
         catch (e: SQLiteException) {
             db.execSQL(selectQuery)
@@ -123,6 +122,7 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
                 taskList.add(task)
             } while (cursor.moveToNext())
         }
+        cursor.close()
         return taskList
     }
 
@@ -135,7 +135,6 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
         val cursor: Cursor?
         try {
             cursor = db.rawQuery(selectQuery, null)
-            cursor.close()
         } catch (e: SQLiteException) {
             db.execSQL(selectQuery)
             return arrayOf<String>()
@@ -151,6 +150,7 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
             } while (cursor.moveToNext())
         }
         val categoryArray: Array<String> = categoryList.toTypedArray()
+        cursor.close()
         return categoryArray
     }
 
@@ -162,7 +162,6 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
         val cursor: Cursor?
         try {
             cursor = db.rawQuery(selectQuery, null)
-            cursor.close()
         }
         catch (e: SQLiteException) {
             db.execSQL(selectQuery)
@@ -177,6 +176,7 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
         val taskStatus: Int = cursor.getInt(cursor.getColumnIndex(TASK_STATUS))
 
         val task = TaskModelClass(taskId, taskCategory, taskDescription, taskDeadline, taskStatus)
+        cursor.close()
         return task
     }
 
@@ -210,7 +210,6 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
         val cursor: Cursor?
         try {
             cursor = db.rawQuery(selectQuery, null)
-            cursor.close()
         } catch (e: SQLiteException) {
             db.execSQL(selectQuery)
             return -1
@@ -221,6 +220,7 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
                 if ( icon == emojiCode) return cursor.getInt(cursor.getColumnIndex(CATEGORY_ID))
             } while (cursor.moveToNext())
         }
+        cursor.close()
         return -1
     }
 
@@ -253,7 +253,6 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
         val cursor: Cursor?
         try {
             cursor = db.rawQuery(selectQuery, null)
-            cursor.close()
         }
         catch (e: SQLiteException) {
             db.execSQL(selectQuery)
@@ -275,6 +274,7 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
                 taskList.add(task)
             } while (cursor.moveToNext())
         }
+        cursor.close()
         return taskList
     }
 }
