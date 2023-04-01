@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import pl.droidsonroids.gif.GifImageView
 import r411.project.todolistapplication.adapter.MyGridAdapter
 import r411.project.todolistapplication.classes.TaskModelClass
 import r411.project.todolistapplication.handler.DatabaseHandler
@@ -34,10 +35,16 @@ class MainActivity : AppCompatActivity() {
     private val updateTasks = object : Runnable {
         override fun run() {
             //Method calls and updating task status here
-            val adapter: MyGridAdapter = findViewById<GridView>(R.id.content).adapter as MyGridAdapter
+            val adapter: MyGridAdapter = findViewById<GridView>(R.id.grid_content).adapter as MyGridAdapter
             adapter.taskArrayList.sortWith(compareBy{it.taskStatus})
             if (taskStatusFilter != null) {
-                adapter.taskArrayList.forEach{ it -> if (it.taskStatus != taskStatusFilter) adapter.taskArrayList.remove(it)}
+                val iterator = adapter.taskArrayList.iterator()
+                while(iterator.hasNext()) {
+                    val task = iterator.next()
+                    if (task.taskStatus != taskStatusFilter) {
+                        iterator.remove()
+                    }
+                }
             }
             adapter.notifyDataSetChanged()
 
@@ -75,7 +82,7 @@ class MainActivity : AppCompatActivity() {
         val taskList: ArrayList<TaskModelClass> = dbhandler.selectAllTasks()
         taskList.sortWith(compareBy { it.taskStatus })
         val adapter = MyGridAdapter(this, taskList)
-        val gridView = findViewById<GridView>(R.id.content)
+        val gridView = findViewById<GridView>(R.id.grid_content)
         gridView.adapter = adapter
 
         val inflater = this.layoutInflater
@@ -216,10 +223,10 @@ class MainActivity : AppCompatActivity() {
         val dropdown = dialogView.findViewById<Spinner>(R.id.dropdown)
 
         val ad = ArrayAdapter<Any?>(
-            this, android.R.layout.simple_spinner_item, categories
+            this, R.layout.spinner_list, categories
         )
 
-        ad.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        ad.setDropDownViewResource(R.layout.spinner_list)
 
         dropdown.adapter = ad
 
@@ -329,7 +336,7 @@ class MainActivity : AppCompatActivity() {
             val status = databaseHandler.modifyTask(taskId, category, description, deadline)
             if(status > -1){
                 Toast.makeText(applicationContext,getString(R.string.task_modified_confirmation),Toast.LENGTH_LONG).show()
-                val adapter = findViewById<GridView>(R.id.content).adapter as MyGridAdapter
+                val adapter = findViewById<GridView>(R.id.grid_content).adapter as MyGridAdapter
                 val taskIndex = adapter.taskArrayList.indexOfFirst { it.taskId == taskId }
                 val modifiedTask = databaseHandler.selectTaskFromId(taskId)
                 if (modifiedTask != null) {
@@ -372,7 +379,7 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(applicationContext,getString(R.string.add_task_confirmation),Toast.LENGTH_LONG).show()
                 val taskList: ArrayList<TaskModelClass> = databaseHandler.selectAllTasks()
                 val insertedTask = taskList[taskList.size-1]
-                val gridView = findViewById<GridView>(R.id.content)
+                val gridView = findViewById<GridView>(R.id.grid_content)
                 val adapter = gridView.adapter as MyGridAdapter
                 if (adapter.taskArrayList.size == 0 && taskStatusFilter == null) {
                     val inflater = this.layoutInflater
@@ -404,7 +411,7 @@ class MainActivity : AppCompatActivity() {
             val status = databaseHandler.deleteTask(deleteId)
             if(status > -1){
                 Toast.makeText(applicationContext,getString(R.string.task_delete_confirmation),Toast.LENGTH_LONG).show()
-                val gridView = findViewById<GridView>(R.id.content)
+                val gridView = findViewById<GridView>(R.id.grid_content)
                 val adapter: MyGridAdapter = gridView.adapter as MyGridAdapter
                 adapter.taskArrayList.remove(deletedTask)
                 if (adapter.taskArrayList.size == 0) {
@@ -429,10 +436,14 @@ class MainActivity : AppCompatActivity() {
         val result = databaseHandler.changeStatus(view.id, 1)
         if (result > -1) {
             Toast.makeText(applicationContext,getString(R.string.task_finished_confirmation),Toast.LENGTH_LONG).show()
-            val adapter: MyGridAdapter = findViewById<GridView>(R.id.content).adapter as MyGridAdapter
+            val adapter: MyGridAdapter = findViewById<GridView>(R.id.grid_content).adapter as MyGridAdapter
             adapter.taskArrayList[adapter.taskArrayList.indexOf(updatedTask)].taskStatus = 1
             adapter.notifyDataSetChanged()
             dialog.dismiss()
+            findViewById<GifImageView>(R.id.fireworks).visibility = View.VISIBLE
+            mainHandler.postDelayed({
+                findViewById<GifImageView>(R.id.fireworks).visibility = View.INVISIBLE
+            }, 1700)
         }
     }
 
@@ -441,7 +452,7 @@ class MainActivity : AppCompatActivity() {
         val databaseHandler = DatabaseHandler(this)
         val tasks = databaseHandler.selectAllTasks()
         tasks.sortWith(compareBy { it.taskStatus })
-        findViewById<GridView>(R.id.content).adapter = MyGridAdapter(this, tasks)
+        findViewById<GridView>(R.id.grid_content).adapter = MyGridAdapter(this, tasks)
     }
 
     fun showFilteredTasks(view: View) {
@@ -449,7 +460,7 @@ class MainActivity : AppCompatActivity() {
         taskStatusFilter = statusFilter
         val databaseHandler = DatabaseHandler(this)
         val filteredTasks = databaseHandler.selectTasksWithStatus(statusFilter)
-        findViewById<GridView>(R.id.content).adapter = MyGridAdapter(this, filteredTasks)
+        findViewById<GridView>(R.id.grid_content).adapter = MyGridAdapter(this, filteredTasks)
     }
 
     private fun sendNotification(lateTasks: Int) {

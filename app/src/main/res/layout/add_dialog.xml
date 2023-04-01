@@ -39,8 +39,8 @@
                 android:id="@+id/dropdown"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:spinnerMode="dropdown" />
+                android:gravity="left"
+                android:background="@drawable/spinner_bg" />
         </LinearLayout>
 
         <LinearLayout
