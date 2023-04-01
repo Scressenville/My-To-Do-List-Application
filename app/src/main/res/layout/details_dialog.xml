@@ -119,7 +119,8 @@
                     android:fontFamily="@font/the_delicate"
                     android:text="@string/btn_task_done"
                     android:textAllCaps="false"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/black"
+                    style="?android:attr/buttonBarButtonStyle" />
 
                 <Button
                     android:id="@+id/delete_task"
@@ -130,7 +131,8 @@
                     android:text="@string/btn_delete_task"
                     android:textColor="@color/black"
                     android:textAllCaps="false"
-                    android:layout_marginStart="10dp"/>
+                    android:layout_marginStart="10dp"
+                    style="?android:attr/buttonBarButtonStyle" />
             </LinearLayout>
         </LinearLayout>
     </RelativeLayout>

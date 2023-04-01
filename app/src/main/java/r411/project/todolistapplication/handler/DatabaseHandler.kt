@@ -6,7 +6,6 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
-import android.security.identity.AccessControlProfileId
 import r411.project.todolistapplication.classes.TaskModelClass
 import java.text.SimpleDateFormat
 import java.util.*
@@ -72,10 +71,10 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
     }
 
     fun addTask(taskCategory: Int, taskDescription: String, taskDeadline: String?): Long{
-        val dateFormat = SimpleDateFormat("dd MMMM yyyy HH:mm")
+        val dateFormat = SimpleDateFormat("dd MMMM yyyy HH:mm", Locale.getDefault())
         var status = 0
         if (taskDeadline != null) {
-            if (TimeUnit.MINUTES.convert((dateFormat.parse(taskDeadline).time - Date().time), TimeUnit.MILLISECONDS) < 0) {
+            if (TimeUnit.MINUTES.convert((dateFormat.parse(taskDeadline)!!.time - Date().time), TimeUnit.MILLISECONDS) < 0) {
                 status = -1
             }
         }
@@ -99,9 +98,10 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
         val selectQuery = "SELECT $TASK_ID, $CATEGORY_ICON_UNICODE, $TASK_DESCRIPTION, $TASK_DEADLINE, $TASK_STATUS " +
                             "FROM $TABLE_TASKS T INNER JOIN $TABLE_CATEGORIES C ON T.$TASK_CATEGORY = C.$CATEGORY_ID ORDER BY $TASK_ID"
         val db = this.readableDatabase
-        var cursor: Cursor? = null
+        val cursor: Cursor?
         try {
             cursor = db.rawQuery(selectQuery, null)
+            cursor.close()
         }
         catch (e: SQLiteException) {
             db.execSQL(selectQuery)
@@ -127,14 +127,15 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
     }
 
     fun selectAllCategories():Array<String> {
-        val categoryList: ArrayList<String> = ArrayList<String>()
+        val categoryList = ArrayList<String>()
         val selectQuery =
             "SELECT $CATEGORY_NAME, $CATEGORY_ICON_UNICODE FROM $TABLE_CATEGORIES ORDER BY $CATEGORY_ID"
 
         val db = this.readableDatabase
-        var cursor: Cursor? = null
+        val cursor: Cursor?
         try {
             cursor = db.rawQuery(selectQuery, null)
+            cursor.close()
         } catch (e: SQLiteException) {
             db.execSQL(selectQuery)
             return arrayOf<String>()
@@ -158,9 +159,10 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
                 "FROM $TABLE_TASKS T INNER JOIN $TABLE_CATEGORIES C ON T.$TASK_CATEGORY = C.$CATEGORY_ID " +
                 "WHERE $TASK_ID = $id"
         val db = this.readableDatabase
-        var cursor: Cursor? = null
+        val cursor: Cursor?
         try {
             cursor = db.rawQuery(selectQuery, null)
+            cursor.close()
         }
         catch (e: SQLiteException) {
             db.execSQL(selectQuery)
@@ -184,8 +186,8 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
         contentValues.put(TASK_ID, deleteId)
 
         val success = db.delete(TABLE_TASKS, "$TASK_ID=$deleteId",null)
-        //2nd argument is String containing nullColumnHack
-        db.close() // Closing database connection
+
+        db.close()
         return success
     }
 
@@ -205,16 +207,17 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
             "SELECT $CATEGORY_ID, $CATEGORY_ICON_UNICODE FROM $TABLE_CATEGORIES"
 
         val db = this.readableDatabase
-        var cursor: Cursor? = null
+        val cursor: Cursor?
         try {
             cursor = db.rawQuery(selectQuery, null)
+            cursor.close()
         } catch (e: SQLiteException) {
             db.execSQL(selectQuery)
             return -1
         }
         if (cursor.moveToFirst()) {
             do {
-                var icon = cursor.getInt(cursor.getColumnIndex(CATEGORY_ICON_UNICODE))
+                val icon = cursor.getInt(cursor.getColumnIndex(CATEGORY_ICON_UNICODE))
                 if ( icon == emojiCode) return cursor.getInt(cursor.getColumnIndex(CATEGORY_ID))
             } while (cursor.moveToNext())
         }
@@ -222,12 +225,11 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
     }
 
     fun modifyTask(taskId: Int, category: Int, description: String, deadline: String?): Int {
-        val dateFormat = SimpleDateFormat("dd MMMM yyyy HH:mm")
-        val status: Int
-        if (TimeUnit.MINUTES.convert((dateFormat.parse(deadline).time - Date().time), TimeUnit.MILLISECONDS) > 0) {
-            status = 0
-        }
-        else status = -1
+        val dateFormat = SimpleDateFormat("dd MMMM yyyy HH:mm", Locale.getDefault())
+        val status: Int =
+            if (TimeUnit.MINUTES.convert((dateFormat.parse(deadline!!)!!.time - Date().time), TimeUnit.MILLISECONDS) > 0) {
+                0
+            } else -1
 
         val db = this.writableDatabase
         val contentValues = ContentValues()
@@ -248,9 +250,10 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
                 "FROM $TABLE_TASKS T INNER JOIN $TABLE_CATEGORIES C ON T.$TASK_CATEGORY = C.$CATEGORY_ID " +
                 "WHERE $TASK_STATUS=$statusFilter ORDER BY $TASK_ID"
         val db = this.readableDatabase
-        var cursor: Cursor? = null
+        val cursor: Cursor?
         try {
             cursor = db.rawQuery(selectQuery, null)
+            cursor.close()
         }
         catch (e: SQLiteException) {
             db.execSQL(selectQuery)

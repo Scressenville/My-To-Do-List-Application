@@ -27,9 +27,9 @@ import java.util.concurrent.TimeUnit
 class MainActivity : AppCompatActivity() {
 
     lateinit var mainHandler: Handler
-    val fullDateFormat = SimpleDateFormat("dd MMMM yyyy HH:mm")
-    val dayFormat = SimpleDateFormat("dd MMMM yyyy")
-    val timeFormat = SimpleDateFormat("HH:mm")
+    val fullDateFormat = SimpleDateFormat("dd MMMM yyyy HH:mm", Locale.getDefault())
+    val dayFormat = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
+    val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
     var taskStatusFilter: Int? = null
 
     private val updateTasks = object : Runnable {
@@ -59,8 +59,8 @@ class MainActivity : AppCompatActivity() {
             var lateTasksSize = 0
             taskList.forEach{ task ->
                 if (task.taskDeadLine != null && task.taskStatus != 1) {
-                    val dateFormat = SimpleDateFormat("dd MMMM yyyy HH:mm")
-                    val minutesDifference = TimeUnit.MINUTES.convert((dateFormat.parse(task.taskDeadLine).time - Date().time), TimeUnit.MILLISECONDS)
+                    val dateFormat = SimpleDateFormat("dd MMMM yyyy HH:mm", Locale.getDefault())
+                    val minutesDifference = TimeUnit.MINUTES.convert((dateFormat.parse(task.taskDeadLine)!!.time - Date().time), TimeUnit.MILLISECONDS)
                     if (task.taskStatus != -1 && minutesDifference < 0) {
                         task.taskStatus = -1
                         dbHandler.changeStatus(task.taskId, -1)
@@ -77,6 +77,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        Locale.setDefault(Locale.FRANCE)
 
         val dbhandler = DatabaseHandler(this)
         val taskList: ArrayList<TaskModelClass> = dbhandler.selectAllTasks()
@@ -145,7 +147,7 @@ class MainActivity : AppCompatActivity() {
 
         dialogView.findViewById<TextView>(R.id.task_category).text = String(Character.toChars(task.taskCategory))
         val desc = dialogView.findViewById<TextView>(R.id.details_description)
-        desc.movementMethod = ScrollingMovementMethod.getInstance();
+        desc.movementMethod = ScrollingMovementMethod.getInstance()
         desc.text= task.taskDescription
 
         dialogView.findViewById<ImageView>(R.id.detail_close_button).setOnClickListener{ b.dismiss() }
@@ -193,7 +195,7 @@ class MainActivity : AppCompatActivity() {
 
         dialogView.findViewById<TextView>(R.id.task_category).text = String(Character.toChars(task.taskCategory))
         val desc = dialogView.findViewById<TextView>(R.id.details_description)
-        desc.movementMethod = ScrollingMovementMethod.getInstance();
+        desc.movementMethod = ScrollingMovementMethod.getInstance()
         desc.text= task.taskDescription
 
         dialogView.findViewById<FloatingActionButton>(R.id.detail_close_button).setOnClickListener{ b.dismiss() }
@@ -239,8 +241,8 @@ class MainActivity : AppCompatActivity() {
             dropdown.setSelection(dbhandler.getCategoryIdByEmoji(task.taskCategory)-1)
             dialogView.findViewById<EditText>(R.id.task_description_input).setText(task.taskDescription)
             if (task.taskDeadLine != null) {
-                dialogView.findViewById<TextView>(R.id.date_picker_text).text = dayFormat.format(fullDateFormat.parse(task.taskDeadLine).time)
-                dialogView.findViewById<TextView>(R.id.time_picker_text).text = timeFormat.format(fullDateFormat.parse(task.taskDeadLine).time)
+                dialogView.findViewById<TextView>(R.id.date_picker_text).text = dayFormat.format(fullDateFormat.parse(task.taskDeadLine)!!.time)
+                dialogView.findViewById<TextView>(R.id.time_picker_text).text = timeFormat.format(fullDateFormat.parse(task.taskDeadLine)!!.time)
             }
             btn.text = getString(R.string.btn_modify_task)
             btn.setOnClickListener{
@@ -256,7 +258,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun openDatePicker(view: View){
-        Locale.setDefault(Locale.FRANCE)
         val dialogBuilder = AlertDialog.Builder(this)
         val inflater = this.layoutInflater
         val dialogView = inflater.inflate(R.layout.date_picker, null)
@@ -293,7 +294,7 @@ class MainActivity : AppCompatActivity() {
 
         dialogBuilder.setPositiveButton(getString(R.string.picker_confirm)) { _, _ ->
             val formattedTime =
-                timeFormat.format(timeFormat.parse(timePicker.hour.toString() + ":" + timePicker.minute.toString()))
+                timeFormat.format(timeFormat.parse(timePicker.hour.toString() + ":" + timePicker.minute.toString())!!)
             view.findViewById<TextView>(R.id.time_picker_text).text = formattedTime
         }
 

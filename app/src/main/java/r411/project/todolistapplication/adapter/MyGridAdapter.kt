@@ -7,8 +7,6 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import r411.project.todolistapplication.R
 import r411.project.todolistapplication.classes.TaskModelClass
 import r411.project.todolistapplication.handler.DatabaseHandler
@@ -21,21 +19,21 @@ class MyGridAdapter(context: Context, var taskArrayList: ArrayList<TaskModelClas
     ArrayAdapter<TaskModelClass>(context, R.layout.post_it, taskArrayList) {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        var listitemView = convertView
-        if (listitemView == null) {
-            listitemView = LayoutInflater.from(context).inflate(R.layout.post_it, parent, false)
+        var listItemView = convertView
+        if (listItemView == null) {
+            listItemView = LayoutInflater.from(context).inflate(R.layout.post_it, parent, false)
         }
 
         val task: TaskModelClass? = getItem(position)
-        val postItBanner = listitemView!!.findViewById<TextView>(R.id.post_it_shade)
-        val postItContent = listitemView.findViewById<TextView>(R.id.post_it_content)
+        val postItBanner = listItemView!!.findViewById<TextView>(R.id.post_it_shade)
+        val postItContent = listItemView.findViewById<TextView>(R.id.post_it_content)
 
-        val postItLayout = listitemView.findViewWithTag<LinearLayout>("postItLayout")
+        val postItLayout = listItemView.findViewWithTag<LinearLayout>("postItLayout")
         postItLayout.id = task!!.taskId
 
         if (task.taskDeadLine != null && task.taskStatus != 1) {
-            val dateFormat = SimpleDateFormat("dd MMMM yyyy HH:mm")
-            val minutesDifference = TimeUnit.MINUTES.convert((dateFormat.parse(task.taskDeadLine).time - Date().time), TimeUnit.MILLISECONDS)
+            val dateFormat = SimpleDateFormat("dd MMMM yyyy HH:mm", Locale.getDefault())
+            val minutesDifference = TimeUnit.MINUTES.convert((dateFormat.parse(task.taskDeadLine)!!.time - Date().time), TimeUnit.MILLISECONDS)
             if (minutesDifference < 0) {
                 task.taskStatus = -1
                 val db = DatabaseHandler(this.context)
@@ -71,6 +69,6 @@ class MyGridAdapter(context: Context, var taskArrayList: ArrayList<TaskModelClas
         postItBanner.text = String(Character.toChars(task.taskCategory))
         postItContent.text = task.taskDescription
 
-        return listitemView
+        return listItemView
     }
 }

@@ -40,7 +40,8 @@
             android:src="@drawable/add_icon"
             app:backgroundTint="@color/banner_dark"
             app:elevation="0dp"
-            app:fabCustomSize="45dp" />
+            app:fabCustomSize="45dp"
+            android:focusable="true" />
     </RelativeLayout>
 
     <FrameLayout

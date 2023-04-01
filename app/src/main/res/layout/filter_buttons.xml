@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="Filtrer par :"
+        android:text="@string/filter_textview"
         android:textColor="@color/background_shade"
         android:textSize="20sp"
         android:textStyle="bold"

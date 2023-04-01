@@ -90,7 +90,8 @@
                     android:fontFamily="@font/the_delicate"
                     android:text="@string/details_btn_reprogram"
                     android:textAllCaps="false"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/black"
+                    style="?android:attr/buttonBarButtonStyle" />
 
                 <Button
                     android:id="@+id/delete_task"
@@ -101,7 +102,8 @@
                     android:fontFamily="@font/the_delicate"
                     android:text="@string/btn_delete_task"
                     android:textAllCaps="false"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/black"
+                    style="?android:attr/buttonBarButtonStyle" />
             </LinearLayout>
         </LinearLayout>
     </RelativeLayout>

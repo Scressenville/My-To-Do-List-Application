@@ -39,7 +39,6 @@
                 android:id="@+id/dropdown"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="left"
                 android:background="@drawable/spinner_bg" />
         </LinearLayout>
 
@@ -102,7 +101,8 @@
                     android:textAlignment="center"
                     android:padding="7dp"
                     android:text="@string/default_date_value"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/black"
+                    android:focusable="true" />
 
                 <TextView
                     android:layout_width="20dp"
@@ -123,7 +123,8 @@
                     android:onClick="openTimePicker"
                     android:padding="7dp"
                     android:text="@string/default_time_value"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/black"
+                    android:focusable="true" />
 
             </LinearLayout>
 
